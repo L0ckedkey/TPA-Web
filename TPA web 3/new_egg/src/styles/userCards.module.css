@@ -1,0 +1,43 @@
+.cards-container{
+    /* background-color: aqua; */
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+    /* background-color: red; */
+}
+
+.card-detail-adjust{
+    display: flex;
+    /* flex-direction: column; */
+    background-color: beige;
+    border: 0.1vw solid black;
+    padding: 1vw;
+    font-size: 1vw;
+    border-radius: 0.4vw;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    gap: 2vw;
+}
+
+.card-adjust{
+    display: flex;
+    /* background-color: red; */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.special-case{
+    display: flex;
+    gap: 0.5vw;
+    align-items: center;
+}
+
+.red-button{
+    background-color: rgb(250, 39, 39);
+    border: none;
+    padding: 0.5vw 1vw;
+    border-radius: 0.5vw;
+    cursor: pointer;
+}

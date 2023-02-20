@@ -1,0 +1,153 @@
+.card-container{
+    /* background-color: red; */
+    width: 23vw;
+    height: 30vw;
+    margin-top: 1vw;
+    border: 2px solid black;
+    border-radius: 0.5vw;
+    padding: 0.5vw;
+}
+
+.card-adjust{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-img-adjust{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1vw;
+}
+
+.card-img{
+    width: 20vw;
+    height: 16vw;
+}
+
+.card-detail-adjust{
+    display: flex;
+    flex-direction: column;
+    /* background-color: beige; */
+    font-size: 1vw;
+    width: 90%;
+}
+
+.card-detail-adjust h3{
+    display: flex;
+    flex-direction: column;
+    /* background-color: beige; */
+    font-size: 1vw;
+    height: fit-content;
+}
+
+.cards-container{
+    /* background-color: aqua; */
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    grid-template-rows: auto;
+    gap: 10px;
+    /* background-color: red; */
+    margin: 50px auto;
+}
+
+.test{
+    display: flex;
+    flex-direction: column;
+
+}
+
+.product-image-detail{
+    width: 25vw;
+    height: 20vw;
+    display: flex;
+    margin: auto;
+}
+
+.product-detail{
+    margin: auto;
+    display: flex;
+    /* background-color: aqua; */
+    width: fit-content;
+    margin-bottom: 2vw;
+}
+
+.product-title{
+    width: 40vw;
+    height: fit-content;
+    /* background-color: red; */
+    font-size: 2vw;
+    word-wrap: normal;
+}
+
+.product-price{
+    font-size: 2vw;
+}
+
+.product-detail-detail{
+    display: flex;
+    flex-direction: column;
+    /* background-color: red; */
+    font-size: 1vw;
+    width: 40vw;
+}
+
+.shop-name{
+    font-size: 1.5vw;
+}
+
+.shop-container{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 5vw;
+    
+}
+
+.shop-container-inside{
+    display: flex;
+    flex-direction: column;
+}
+
+.visit-shop-button{
+    height: 2vw;
+    width: 5vw;
+    border-radius: 10px;
+    border: none;
+    background-color: #f79605;
+    font-size: 0.8vw;
+}
+
+.visit-shop-button:hover{
+    height: 2vw;
+    width: 5vw;
+    border-radius: 10px;
+    border: none;
+    background-color: #2647BB;
+    font-size: 0.8vw;
+    color: white;
+    cursor: pointer;
+}
+
+.product-card-title{
+    text-decoration: none;
+    color: black;
+}
+
+.spinner-adjust{
+    width: 2vw;
+    text-align: center;
+}
+
+.add-to-cart{
+    height: 1.5vw;
+    width: 5vw;
+    margin-top: 0.5vw;
+    border: none;
+    background-color: #f79605;
+    font-size: 0.8vw;
+    cursor: pointer;
+}

@@ -1,0 +1,125 @@
+.shop-header{
+    /* background-color: red; */
+    height: 7vw;
+    width: 90vw;
+    margin: auto;
+    display: flex;
+    border: 0.2vw solid #bac9f8;
+    border-radius: 5px;
+    background-color: #F2F2F2;
+    justify-content: space-between;
+}
+
+.shop-detail{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 1vw;
+}
+
+.shop-name{
+    font-size: 2vw;
+}
+
+.shop-desc{
+    font-size: 1.5vw;
+}
+
+.shop-statistic{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 1vw;
+    align-items: center;
+}
+
+.shop-statistic-detail{
+    font-size: 1.2vw;
+}
+
+.shop-statistic-title{
+    font-size: 1.4vw;
+    /* background-color: red; */
+    width: 8vw;
+    text-align: center;
+}
+
+.add-product-button{
+    position: fixed;
+    
+    font-size: 90px;
+    left: 95vw;
+    top: 89vh;
+   
+}
+
+.plus-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 3vw;
+    height: 3vw;
+    background-color: #2647BB;
+    color: white;
+    border-radius: 3vw;
+    /* text-align: center; */
+    font-size: 2.5vw;
+}
+
+.plus-button:hover{
+    cursor: pointer;
+}
+
+.test{
+    width: fit-content;
+    height: fit-content;
+    font-size: 1vw;
+}
+
+.test-2{
+    display: flex;
+    align-items: center;
+}
+
+.add-product-container{
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    /* background-color: red; */
+    width: 80vw;
+    height: fit-content;
+}
+
+.add-product-container button{
+    width: 40vw;
+}
+
+.add-product-container select{
+    width: 30.6vw;
+    height: 2vw;
+}
+
+.add-product-container input{
+    width: 30vw;
+    height: 2vw;
+}
+
+.add-product-title{
+    /* background-color: #2647BB; */
+    display: flex;
+    justify-content: space-between;
+    width: 14vw;
+}
+
+.add-product-detail{
+    display: flex;
+    gap: 1vw;
+    margin-bottom: 1vw;
+    align-items: center;
+}
+
+.add-product-text-area{
+    width: 30.2vw;
+    height: 5vw;
+}
+

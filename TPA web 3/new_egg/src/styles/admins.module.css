@@ -1,0 +1,80 @@
+.button-container{
+    height: 40vw;
+    margin: auto;
+    width: 80vw;
+    display: grid;
+    grid-template-columns: repeat(3, 2fr);
+    gap: 2vw;
+}
+
+.button-container button{
+    font-size: 2vw;
+    background-color: #f79605;
+    border: none;
+    border-radius: 1vw;
+}
+
+.button-container button:hover{
+    cursor: pointer;
+}
+
+.add-product-detail{
+    display: flex;
+    gap: 1vw;
+    margin-bottom: 1vw;
+    align-items: center;
+}
+
+.add-product-title{
+    /* background-color: #2647BB; */
+    display: flex;
+    justify-content: space-between;
+    width: 14vw;
+}
+
+.add-product-text-area{
+    width: 30.2vw;
+    height: 5vw;
+}
+
+.add-promo-container{
+    /* background-color: red; */
+    width: 80vw;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+}
+
+.add-product-detail input{
+    width: 30vw;
+}
+
+.add-promo-text-area{
+    width: 30.3vw;
+    height: 5vw;
+}
+
+.add-promo-button{
+    width: 30vw;
+}
+
+.blast-email-container{
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    margin: auto;
+
+    gap: 2vw;
+    align-items: center;
+    /* background-color: red; */
+}
+
+.blast-email-container textarea{
+    width: 50vw;
+    height: 20vw;
+}
+
+.blast-email-container button{
+    width: 100%;
+    height: 3vw;
+}   
