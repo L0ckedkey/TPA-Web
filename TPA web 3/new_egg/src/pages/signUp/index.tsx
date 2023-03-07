@@ -25,6 +25,8 @@ export default function SignUp(){
     const [isLengthRequired, setNewIsLengthRequired] = useState(false)
     const [additional, setNewAdditional] = useState(0)
     const [isAgree, setNewAgreement] = useState('');
+    const [isPhoneNumber, setIsPhoneNumber] = useState(false)
+    const [errorMessage, setErrorMessage] = useState('')
 
     const link = "http://localhost:8080/signUp"
     const link2 = "http://localhost:8080/signIn"
@@ -33,12 +35,11 @@ export default function SignUp(){
 
     const fetchData = async() => {
 
-        if(additional >= 3 && isLengthRequired && firstName.length >= 0 && lastName.length >= 0 && emailAddress.length >= 0 && phoneNumber.length >= 0){
-            console.log(emailAddress)
-
+        if(additional >= 3 && isLengthRequired && firstName.length >= 0 && lastName.length >= 0 && emailAddress.length >= 0 && phoneNumber.length >= 0 && isPhoneNumber){
+            
             Axios.get(link2,{
                 params:{email: emailAddress}}).then(function (response) {
-                console.log(response.data);
+                // console.log(response.data);
 
                 if(response.data.Email === ''){
                     Axios.get(link, {
@@ -51,13 +52,16 @@ export default function SignUp(){
                               }
                     })
                       .then(function (response) {
-                        console.log(typeof(response.data));
-                        if(response.data == ""){
+                        // console.log(typeof(response.data));
+                        console.log(response.data);
+                        if(response.data != "Error"){
                           router.push("/signIn")
+                        }else{
+                            console.log(response.data);
                         }
                       })
                       .catch(function (error) {
-                        console.log(error);
+                        // console.log(error);
                       })
                       .then(function () {
                         // always executed
@@ -66,7 +70,7 @@ export default function SignUp(){
                
               })
               .catch(function (error) {
-                console.log(error);
+                // console.log(error);
               })
               .then(function () {
                 // always executed
@@ -84,9 +88,14 @@ export default function SignUp(){
         setNewIsNumeric(false)
         setNewIsContainSpecialChar(false)
         setNewIsLengthRequired(false)
+        setIsPhoneNumber(false)
 
         if(password.length >= 8 && password.length <= 30){
             setNewIsLengthRequired(true)
+        }
+
+        if(!isNaN(Number(phoneNumber))){
+            setIsPhoneNumber(true)
         }
 
         for(let i =0; i<password.length; i++){
@@ -144,16 +153,16 @@ export default function SignUp(){
 
         setNewAdditional(isTrue)
 
-        console.log("isTrue" + isTrue);
+        // console.log("isTrue" + isTrue);
 
 
-        console.log(password)
-        console.log(isUpperCase)
-        console.log(isLowerCase)
-        console.log(isNumeric)
-        console.log(isContainSpecialChar)
-        console.log(isAgree)
-        console.log("=================")
+        // console.log(password)
+        // console.log(isUpperCase)
+        // console.log(isLowerCase)
+        // console.log(isNumeric)
+        // console.log(isContainSpecialChar)
+        // console.log(isAgree)
+        // console.log("=================")
     })
 
     useEffect(() => {
@@ -163,11 +172,20 @@ export default function SignUp(){
 
     const handleChange = (event:any) => {
         if (event.target.checked) {
-            setNewAgreement("True")
+            console.log("here")
+            setNewAgreement("yes")
           } else {
-            setNewAgreement("False")
+            // console.log("hore")
+            setNewAgreement("no")
           }
+          console.log(isAgree);
+          
     }
+
+    // useEffect(() => {
+    //     console.log(isAgree)
+    // }, [isAgree])
+
 
     return(
         <div className={style["sign-in-box"]}>
@@ -180,7 +198,7 @@ export default function SignUp(){
             {firstName.length == 0 ? <div className={style["error"]}>Must not empty</div> :<div></div>}
             <input type="text" placeholder='Last Name' id="last-name" onChange={(event) => setNewLastName(event.target.value)}></input>
             {lastName.length == 0 ? <div className={style["error"]}>Must not empty</div> :<div></div>}
-            <input type="text" placeholder='Email Address' id="email-address" onChange={(event) => setNewEmailAddress(event.target.value)}></input>
+            <input type="email" placeholder='Email Address' id="email-address" onChange={(event) => setNewEmailAddress(event.target.value)}></input>
             {emailAddress.length == 0 ? <div className={style["error"]}>Must not empty</div> :<div></div>}
             <input type="text" placeholder='Mobile Phone Number (optional)' id="mobile-phone" onChange={(event) => setNewPhoneNumber(event.target.value)}></input>
             {phoneNumber.length == 0 ? <div className={style["error"]}>Must not empty</div> :<div></div>}

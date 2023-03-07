@@ -24,6 +24,10 @@ export default function AdminHome(){
         router.push("/admin/addShop")
     }
 
+    const goToManagePromotion = () => {
+        router.push("/admin/managePromotion")
+    }
+
     useEffect(() => {
         middleware('admin/home','Admin', router)
     })
@@ -37,7 +41,7 @@ export default function AdminHome(){
                 <button onClick={() => goToSendNewsLetter()}>Send Newsletter</button>
                 <button onClick={() => goToAddShop()}>Insert New Shop</button>
                 <button>View Review</button>
-                <button>Manage Promotion</button>
+                <button onClick={() => goToManagePromotion()}>Manage Promotion</button>
             </div>
         <Footer/>
     </div>

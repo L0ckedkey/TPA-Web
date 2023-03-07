@@ -26,6 +26,20 @@ export default function SignIn(){
   const [code, setCode] = useState("")
   const router = useRouter()
   const [isTrue, setIsTrue] = useState(true)
+  const [disabled, setDisabled] = useState(false);
+
+  const handleClick = () => {
+    setDisabled(true);
+    // Perform some action here
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDisabled(false);
+    }, 900000);
+
+    return () => clearTimeout(timer);
+  }, [disabled]);
 
 
  useEffect(() => {
@@ -49,6 +63,8 @@ export default function SignIn(){
  }, [])
 
     const sendCode = () => {
+      handleClick()
+      // console.log("clicked")
         emailjs.send('service_qti1y0g', 'template_k8x1h22', {
             sender_name: 'NewEgg Admin',
             recipient_name: sessionStorage.getItem("email"),
@@ -90,7 +106,7 @@ export default function SignIn(){
           <h2 className={style["sign-up-title"]}>Sign In Using One Time Code</h2>
           {isTrue === true ? <input type="text" placeholder='Code' onChange={(event) => setInputCode(event.target.value)}></input> : <input type="text" className={style["wrong-input-text"]} placeholder='Code' onChange={(event) => setInputCode(event.target.value)}></input>}
           <button className={`${style["orange-button"]} ${style["button"]}`} onClick={() => validateCode()}>Verify Code</button>  
-          <button className={`${style["orange-button"]} ${style["button"]}`} onClick={() => sendCode()}>Send Code</button>        
+          <button className={`${style["orange-button"]} ${style["button"]}`} onClick={() => sendCode()} disabled={disabled}>Send Code</button>        
       </div>
   )
 

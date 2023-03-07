@@ -9,4 +9,6 @@ type Account struct {
 	Password         string
 	NewsLetterStatus string
 	Role             string
+	Status           string
+	Money            int
 }

@@ -32,7 +32,6 @@ func GetAShop(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db.Close()
-
 }
 
 func AddShop(w http.ResponseWriter, r *http.Request) {
@@ -65,6 +64,7 @@ func AddShop(w http.ResponseWriter, r *http.Request) {
 		Password:         string(password),
 		NewsLetterStatus: "no",
 		Role:             "Seller",
+		Status:           "Active",
 	}
 
 	shop := &model.Shop{
@@ -89,5 +89,77 @@ func AddShop(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
+	db.Close()
+}
+
+func GetBestShop(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers:", "Origin, Content-Type, X-Auth-Token, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+
+	var db = databaseUtil.GetConnection()
+
+	var shops []*model.Shop
+
+	var err = db.Model(&shops).Order("rating_shop DESC").Limit(3).Select()
+	// fmt.Println(product.Brand.BrandName)
+	if err != nil {
+		fmt.Println("error while select best shop")
+		fmt.Println(err)
+		json.NewEncoder(w).Encode("error")
+		db.Close()
+	}
+
+	json.NewEncoder(w).Encode(&shops)
+	db.Close()
+}
+
+func UpdateShop(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers:", "Origin, Content-Type, X-Auth-Token, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+
+	shopID, err := strconv.Atoi(r.URL.Query().Get("shopID"))
+	name := r.URL.Query().Get("name")
+	description := r.URL.Query().Get("description")
+	db := databaseUtil.GetConnection()
+
+	if err != nil {
+		fmt.Println("error while parsing update shop")
+		fmt.Println(err)
+		json.NewEncoder(w).Encode("Error")
+		db.Close()
+		return
+	}
+
+	var shop model.Shop
+
+	if name != "" {
+		_, err = db.Model(&shop).Where("id = ?", shopID).Set("name = ?", name).Update()
+		if err != nil {
+			fmt.Println("error while update name shop")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode("Error")
+			db.Close()
+			return
+		}
+	}
+
+	if description != "" {
+		_, err = db.Model(&shop).Where("id = ?", shopID).Set("description = ?", description).Update()
+		if err != nil {
+			fmt.Println("error while update description shop")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode("Error")
+			db.Close()
+			return
+		}
+	}
+
+	json.NewEncoder(w).Encode("Success")
 	db.Close()
 }

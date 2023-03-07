@@ -59,6 +59,10 @@ export default function SignIn(){
     }
   },[])
 
+  const goToForgotPassword = () => {
+    router.push("/password/forgotPassword")
+  }
+
 
   return(
       <div className={style["sign-in-box"]} style={{backgroundColor: theme.primaryColor}}>
@@ -75,9 +79,7 @@ export default function SignIn(){
           <div className={style["sign-up"]}>
             <h3 className={style["sign-up-label"]}>New to Newegg?</h3><Link href="/signUp" className={style["sign-up-label"]}>Sign Up</Link>
           </div>
-          <h3 className={style["sign-up-label"]}>OR</h3>
-          <button className={style["white-button"]}>Sign in with google</button>
-          <button className={style["white-button"]}>Sign in with apple</button>            
+          <button className={style["white-button"]} onClick={() => goToForgotPassword()}>Forgot Password</button>         
       </div>
   )
 

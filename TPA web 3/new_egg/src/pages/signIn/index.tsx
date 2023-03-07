@@ -37,6 +37,7 @@ export default function SignIn(){
             console.log(response.data)
           }else{
             setNewEmailCorrect(false)
+            console.log(response.data)
           }
           
         })
@@ -59,12 +60,20 @@ export default function SignIn(){
   const goToOneTimeCode = () => {
     router.push("/oneTimeCode")
   }
+  
+  const goToHome = () =>{
+    router.push("/home")
+  } 
 
   return(
       <div className={style["sign-in-box"]} style={{backgroundColor: theme.primaryColor}}>
-          <Image src={logo} className={style["img-adjust"]} alt='error'/>
+          <Image src={logo} className={style["img-adjust"]} alt='error' onClick={() => goToHome()}/>
           <h2 className={style["sign-up-title"]}>Sign In</h2>
-          {isEmailCorrect ? <input type="text" placeholder='Email Address' onChange={(event) => setNewEmail(event.target.value)}></input> : <input className={style["wrong-input-text"]} type="text" placeholder='Email Address' onChange={(event) => setNewEmail(event.target.value)}></input>}
+          {isEmailCorrect ? <input type="text" placeholder='Email Address' onChange={(event) => setNewEmail(event.target.value)}></input> : 
+            <div className={style["placeholder"]}>
+              <input className={style["wrong-input-text"]} type="text" placeholder='Email Address' onChange={(event) => setNewEmail(event.target.value)}></input><br></br><label>Email invalid or banned</label>
+            </div>
+          }
           <button className={`${style["orange-button"]} ${style["button"]}`} onClick={() => fetchData()}>SIGN IN</button>
           <button className={style["white-button"]} onClick={() => goToOneTimeCode()}>GET ONE TIME SIGN IN CODE</button>
           <a className={style["sign-up-label"]} >What's the One-Time Code?</a>

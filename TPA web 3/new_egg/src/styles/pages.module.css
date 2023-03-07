@@ -593,6 +593,10 @@ input:checked + .slider:before {
   border: 0.2vw solid red;
 }
 
+.placeholder{
+  width: 100%;
+}
+
 .search-bar-container{
   /* background-color: red; */
   width: fit-content;
@@ -644,4 +648,69 @@ input:checked + .slider:before {
     left: 90vw;
     top: 89vh; 
    
+}
+
+
+
+.search-box {
+ position: absolute;
+ z-index: 99;
+ width: 33vw;
+ background-color: rgb(188, 222, 253);
+ border-radius: 6px;
+ left: 26vw;
+ /* opacity: 50%; */
+ top: 5vw;
+ /* height: 20vw; */
+ height: fit-content;
+ /* display: flex; */
+ padding: 1vw;
+}
+
+.product-search{
+  display: flex;
+  flex-direction: column;
+  min-height: 5vw;
+  width: fit-content;
+}
+
+.button-product-search{
+  min-width: 5vw;
+  /* width: fit-content; */
+}
+
+.search-container{
+  display: flex;
+  justify-content: space-between;
+}
+
+.address-container{
+  position: relative;
+  z-index: 101;
+  background-color: red;
+  height: fit-content;
+  width: 15vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  top: 10vw;
+  padding: 0.5vw;
+  border-radius: 10px;
+  background-color: rgb(207, 252, 255);
+}
+
+.input-address-container{
+  width: 13vw;
+  display: flex;
+  flex-direction: column;
+}
+
+.places-container{
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+}
+
+.places-container button{
+  width: 100%;
 }

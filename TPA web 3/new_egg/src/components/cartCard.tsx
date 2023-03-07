@@ -1,39 +1,137 @@
 import Image from "next/image";
 import React, { ReactNode, useEffect, useState } from "react";
-import style from '../styles/cards.module.css'
+import style from '../styles/cartCards.module.css'
 import pc from '../assets/pc.jpg'
 import Link from "next/link";
 import { Router, useRouter } from "next/router";
+import Axios  from "axios"
+import { chownSync } from "fs";
 
-export const Cards = (props:any) =>{
+var totalPrice = 0
+
+export const Card = (props:any) =>{
+    const { details } = props;
+    // console.log("card")
+    // console.log(details)
     return(
-        <div className={style["cards-container"]}>
-            {props.children}
+        <div className={style["card-container"]}>
+            <p>{details.Shop.Name}</p>
+            <p>{details.address}</p>
+            <ShopProducts shopID={details.ShopID} accountID={details.AccountID} />
         </div>
     )
+   
 }
 
-export const Card = (props:any) => {
 
-    const [link, setNewLink] = useState('')
-    const router = useRouter()
-    props = props.details
-    console.log("here")
-    console.log(props)
+export const ShopProducts = (props:any) => {
+    // console.log("Shop products")
+    // console.log(props)
+    const [products, setProducts] = useState([]);
+    
+    var price = 0
+    const link = "http://localhost:8080/getCartProducts"
+    useEffect(() => {
+      Axios.get(link,{
+        params:{
+            accountID : props.accountID,
+            shopID : props.shopID,
+        }
+      })
+        .then(response => {
+            console.log(response.data)
+            setProducts(response.data);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }, [props.shopID]);
+
+
+    
+
     return (
-        <div  className={style["card-container"]}>
-            <div className={style["card-adjust"]}>
-                <div className={style["card-img-adjust"]}>
-                    <Image className={style["card-img"]} src={pc} alt="error" width={300} height={300}></Image>
-                </div>
-                <div className={style["card-detail-adjust"]}>
-                    <Link href="/product/[id]" as={`/product/${props.ID}`} className={style["product-card-title"]}><label>{props.ProductName}</label></Link>
-                    <br></br>
-                    <label>Name : {props.Product.ProductName}</label>
-                    <label>Price : $ {props.Product.ProductPrice}</label>
-                    <label>Quantity : {props.Quantity}</label>
-                </div>
-            </div>
+        <div>
+          {products ? products.map((product:any) => {
+            price = price + (product.Product.ProductPrice * product.Quantity)
+            // console.log(product)
+            return(<ShopProductCard details={product}/>)
+          }) : null
+          }
+          <label className={style["label-total-price"]}>Total Price : ${price}</label>
         </div>
-    )
+      );
+}
+
+const ShopProductCard = (props:any) => {
+  var product = props.details
+  console.log("cart card");
+  
+  console.log(product);
+  
+  const [quantity, setQuantity] = useState(1)
+
+  const updateLink = "http://localhost:8080/updateCart"
+  const deleteLink = "http://localhost:8080/deleteCart"
+
+  const handleIncrement = () => {
+    if(quantity < product.Product.Stock){
+      setQuantity(quantity + 1);
+    }
+  };
+
+  const handleDecrement = () => {
+    if(quantity > 1){
+      setQuantity(quantity - 1);
+    }
+  };
+
+  const deleteCart = () => {
+    Axios.get(deleteLink,{
+      params:{
+          cartID : product.ID,
+      }
+    })
+      .then(response => {
+          console.log(response.data)
+          window.location.reload()
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
+  const updateCart = () => {
+    Axios.get(updateLink,{
+      params:{
+          cartID : product.ID,
+          quantity: quantity
+      }
+    })
+      .then(response => {
+          console.log(response.data)
+          window.location.reload()
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
+  return(
+  <div key={product.ID} className={style["card-adjust"]}>
+      <img className={style["card-img"]} src={product.Product.Url} alt={"error"}></img>
+      <div>
+        <p>Name     : {product.Product.ProductName}</p>
+        <p>Quantity : {product.Quantity}</p>
+        <p>Total Price : ${product.Product.ProductPrice * product.Quantity}</p>
+      </div>
+      <div>
+        <button onClick={handleDecrement}>-</button>
+        <input type="text" value={quantity} className={style["spinner-adjust"]}/>
+        <button onClick={handleIncrement}>+</button>
+      </div>
+      <button onClick={() => updateCart()}>Update</button>
+      <button onClick={() => deleteCart()}>Delete</button>
+  </div>
+  )
 }

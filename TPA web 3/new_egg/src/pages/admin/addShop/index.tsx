@@ -78,6 +78,7 @@ export default function AddShop(){
                     phoneNumber: phoneNumber,
                     password: password,
                     accuracy: 0,
+                    
                 }
             }).then(function (response) {
                 console.log(response.data);

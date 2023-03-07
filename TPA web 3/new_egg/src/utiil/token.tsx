@@ -1,3 +1,4 @@
+import { Cookie } from '@next/font/google';
 import Axios from 'axios'
 import { NextRouter } from 'next/router'
 
@@ -12,44 +13,85 @@ function getCookie(){
 
 export async function getName(){
     var cookie = getCookie();
-    var link = "http://localhost:8080/getUserFromCookie"
-    var name = ""
-    const result = await Axios.get(link,{params:{token: cookie}})
 
-    // console.log(result.data)
+    if(cookie === undefined){
+        console.log("here")
+    }else{
+        var link = "http://localhost:8080/getUserFromCookie"
+        var name = ""
+        const result = await Axios.get(link,{params:{token: cookie}})
+    
+        console.log(result.data)
+    
+        return result.data.Name
+    }
+    
+}
 
-    return result.data.Name
+export async function getNewsletterStatus(){
+    var cookie = getCookie();
+
+    if(cookie === undefined){
+
+    }else{
+        var link = "http://localhost:8080/getUserFromCookie"
+        var name = ""
+        const result = await Axios.get(link,{params:{token: cookie}})
+    
+        console.log(result.data)
+    
+        return result.data.NewsLetterStatus
+    }
+    
 }
 
 export async function getUserID(){
     var cookie = getCookie();
-    var link = "http://localhost:8080/getUserFromCookie"
-    var name = ""
-    const result = await Axios.get(link,{params:{token: cookie}})
-
-    // console.log(result.data)
-
-    return result.data.ID
+    if(cookie === undefined){
+        return "No data"
+    }else{
+        var link = "http://localhost:8080/getUserFromCookie"
+        var name = ""
+        const result = await Axios.get(link,{params:{token: cookie}})
+    
+        // console.log(result.data)
+    
+        return result.data.ID
+    }
+    
 }
 
 
 export async function getRole(){
     var cookie = getCookie();
-    var link = "http://localhost:8080/getUserFromCookie"
-    var name = ""
-    const result = await Axios.get(link,{params:{token: cookie}})
+    
+    if(cookie === undefined){
+        console.log("here")
+    }else{
+        var link = "http://localhost:8080/getUserFromCookie"
+        var name = ""
+        const result = await Axios.get(link,{params:{token: cookie}})
 
-    // console.log(result.data)
+        // console.log(result.data)
 
-    return result.data.Role
+        return result.data.Role
+    }
 }
+
 
 export async function getUser(){
     var link = "http://localhost:8080/getUserFromCookie"
     var cookie = getCookie();
-    const result = await Axios.get(link,{params:{token: cookie}})
 
-    return result.data
+    if(cookie === undefined){
+        return "No data"
+    }else{
+        const result = await Axios.get(link,{params:{token: cookie}})
+        console.log(result.data)
+        return result.data
+    }
+
+   
 }
 
 export async function getShopID(){

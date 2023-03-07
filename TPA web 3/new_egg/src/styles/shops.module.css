@@ -53,6 +53,28 @@
    
 }
 
+.add-banner-button{
+    position: fixed;
+    
+    font-size: 0.3vw;
+    left: 90vw;
+    top: 89vh;
+   
+}
+
+.banner-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 3vw;
+    height: 3vw;
+    background-color: #2647BB;
+    color: white;
+    border-radius: 3vw;
+    /* text-align: center; */
+    font-size: 1vw;
+}
+
 .plus-button{
     display: flex;
     justify-content: center;
@@ -123,3 +145,55 @@
     height: 5vw;
 }
 
+.dropdown{
+    min-width: 3vw;
+}
+
+.img-banner{
+    width: 15vw;
+}
+
+.img-banner-container{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    align-items: center;
+    justify-content: center;
+    gap: 2vw;
+  }
+  
+
+  .carousel {
+    /* margin-top: 1vw; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* background-color: red; */
+    width: 100vw;
+    position: relative;
+    max-height: 30vw;
+  }
+
+  .carousel img {
+    max-height: 30vw;
+    background-color: red;
+  }
+
+
+  .carousel-prev,
+.carousel-next {
+  font-size: 4vw;
+  color: #000;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  /* background-color: red; */
+}
+
+.carousel-prev {
+  left: 0;
+}
+
+.carousel-next {
+  right: 1.3vw;
+}

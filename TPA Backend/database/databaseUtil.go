@@ -4,8 +4,8 @@ import (
 	"backend/model"
 	"fmt"
 
-	"github.com/go-pg/pg"
-	"github.com/go-pg/pg/orm"
+	"github.com/go-pg/pg/v10"
+	"github.com/go-pg/pg/v10/orm"
 )
 
 func CreateSchema(db *pg.DB) error {
@@ -19,6 +19,21 @@ func CreateSchema(db *pg.DB) error {
 		(*model.Product)(nil),
 		(*model.Promo)(nil),
 		(*model.Cart)(nil),
+		(*model.WishlistHeader)(nil),
+		(*model.WishlistDetail)(nil),
+		(*model.Banner)(nil),
+		(*model.AdminBanner)(nil),
+		(*model.Chat)(nil),
+		(*model.CustomerServiceChat)(nil),
+		(*model.OrderHeader)(nil),
+		(*model.OrderDetail)(nil),
+		(*model.Address)(nil),
+		(*model.UsedPromo)(nil),
+		(*model.ReviewProduct)(nil),
+		(*model.ReviewShop)(nil),
+		(*model.FollowedWishlist)(nil),
+		(*model.ReviewWishlist)(nil),
+		(*model.HelpfullReview)(nil),
 	}
 	fmt.Println("make schema")
 	for _, model := range models {

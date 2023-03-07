@@ -6,10 +6,33 @@
     /* background-color: red; */
 }
 
+.cards-container-banned{
+    /* background-color: aqua; */
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+    background-color: red;
+    /* background-color: red; */
+}
+
 .card-detail-adjust{
     display: flex;
     /* flex-direction: column; */
     background-color: beige;
+    border: 0.1vw solid black;
+    padding: 1vw;
+    font-size: 1vw;
+    border-radius: 0.4vw;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    gap: 2vw;
+}
+
+.card-detail-adjust-banned{
+    display: flex;
+    /* flex-direction: column; */
+    background-color: rgb(240, 91, 91);
     border: 0.1vw solid black;
     padding: 1vw;
     font-size: 1vw;
@@ -40,4 +63,17 @@
     padding: 0.5vw 1vw;
     border-radius: 0.5vw;
     cursor: pointer;
+}
+
+.green-button{
+    background-color: rgb(85, 250, 98);
+    border: none;
+    padding: 0.5vw 1vw;
+    border-radius: 0.5vw;
+    cursor: pointer;
+}
+
+
+.banned{
+    border: 1px solid red;
 }

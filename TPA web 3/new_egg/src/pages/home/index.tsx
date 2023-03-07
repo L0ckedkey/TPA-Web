@@ -14,20 +14,49 @@ import middleware, { getName, getRole, getShopID } from '@/utiil/token';
 import { useRouter } from 'next/router'
 import List from '@/components/infiniteScroll';
 
-const images = [
-    "https://promotions.newegg.com/nepro/23-0187/759x300.png",
-    "https://promotions.newegg.com/nepro/23-0177/759x300.jpg",
-    "https://promotions.newegg.com/nepro/23-0180/759x300.jpg",
-];
+// const images = [
+//     "https://promotions.newegg.com/nepro/23-0187/759x300.png",
+//     "https://promotions.newegg.com/nepro/23-0177/759x300.jpg",
+//     "https://promotions.newegg.com/nepro/23-0180/759x300.jpg",
+// ];
 
 const link = "http://localhost:8080/getAllProducts"
-
+const getLink = 'http://localhost:8080/getBannerFromAdmin';
+const getBestShopsLink = 'http://localhost:8080/getBestShop';
 
 export default function Home(){
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [role, setRole] = useState('')
     const router = useRouter(); 
     const [shopID, setShopID] = useState('')
+    const [filterBy, setFilterBy] = useState('')
+    const [search, setSearch] = useState('')
+    const [images, setImages] = useState([])
+    const [isLoading, setLoading] = useState(true)
+    const [bestShop, setBestShop] = useState([])
+
+
+    useEffect(() => {
+        Axios.get(getLink).then(function (response) {
+            console.log(response.data);
+            setImages(response.data);
+            setLoading(false)
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+
+        Axios.get(getBestShopsLink)
+        .then(function (response) {
+            console.log(response.data);
+            setBestShop(response.data)
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+        
+    },[]);
+
     const handlePrevClick = () => {
         if (currentImageIndex === 0) {
         setCurrentImageIndex(images.length - 1);
@@ -37,6 +66,7 @@ export default function Home(){
     };
 
     const handleNextClick = () => {
+        console.log("hehe")
         if (currentImageIndex === images.length - 1) {
         setCurrentImageIndex(0);
         } else {
@@ -50,7 +80,7 @@ export default function Home(){
         Axios.get(link)
         .then(function (response) {
             setNewProduct(response.data)
-            console.log(response.data)
+            // console.log(response.data)
         })
         .catch(function (error) {
           console.log(error);
@@ -59,10 +89,6 @@ export default function Home(){
           // always executed
         }); 
     }
-    useEffect(() => {
-        getAllData();
-        middleware("/home","",router)
-      }, []);
 
     useEffect(() => {
 
@@ -85,34 +111,45 @@ export default function Home(){
         router.push("/admin/home")
     }
 
+    const searchFilter = (search:any) => {
+        console.log(search)
+        setSearch(search)
+
+    }
+
+
     return(
         <div> 
-            <Navbar/>
+            <Navbar onSearchFilter={searchFilter}/>
+           
             <div className={style["carousel"]}>
                 <div className={style["carousel-prev"]} onClick={() => handlePrevClick()}>
                     &#10094;
                 </div>
                
-                <img src={images[currentImageIndex]} alt="slide" />
+                {!isLoading ?
+                    <img src={images[currentImageIndex].Url} alt="slide" /> : null
+                }
                 <div className={style["carousel-next"]} onClick={() => handleNextClick()}>
                     &#10095;
                 </div>
                 
             </div>
-            {/* <Cards>
-                { products ? 
-                    products.map((product:any) => {
-                        return(
-                            <Card key={product.ID} details={product}></Card>
-                        ) 
-                    }) : console.log('not yet')
-
-                }
-            </Cards> */}
-            <List/>
+            {
+                bestShop ? bestShop.map((bestShopSingle:any) => {
+                    return(<h3>Best Shop : {bestShopSingle.Name}</h3>)
+                }):null
+            }
+            <select value={filterBy} onChange={(event) => setFilterBy(event.target.value)}>
+            <option value={""}></option>
+                <option value={"priceASC"}>Price Lowest to Highest</option>
+                <option value={"priceDESC"}>Price Highest to Lowest</option>
+            </select>
+            <List orderBy={filterBy} search={search} products={products}/>
             {
                 role === "Seller" ? <button className={style["add-product-button"]} onClick={() => goToShop()}>Go To Shop</button> : role ==="Admin" ? <button onClick={() => goToAdmin()} className={style["add-product-button"]}>Go To Admin Page</button>: console.log()
             }
+           
             <Footer/>
         </div>
     )

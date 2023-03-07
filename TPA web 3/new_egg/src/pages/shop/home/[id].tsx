@@ -1,4 +1,4 @@
-import { Card, Cards } from "@/components/card"
+import { Card, Cards, CardShop } from "@/components/card"
 import Footer from "@/components/footer"
 import Navbar from "@/components/navbar"
 import middleware from "@/utiil/token"
@@ -6,6 +6,7 @@ import axios from "axios"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import style from '../../../styles/shops.module.css'
+import changeBanner from "./changeBanner"
 
 export default function Home(){
     const router = useRouter()
@@ -37,27 +38,40 @@ export default function Home(){
           .then(function () {
             // always executed
           }); 
+
+          axios.get("http://localhost:8080/GetAllProductsFromShop/" + id)
+          .then(function (response) {
+              setNewProduct(response.data)
+              console.log(response.data)
+          })
+          .catch(function (error) {
+            console.log(error);
+          })
+          .then(function () {
+            // always executed
+          }); 
         }
 
         // const link = "/shop/home" + 
 
         // middleware("/shop/home")
 
-        axios.get("http://localhost:8080/getAllProductsFromShop/" + id)
-        .then(function (response) {
-            setNewProduct(response.data)
-            console.log(response.data)
-        })
-        .catch(function (error) {
-          console.log(error);
-        })
-        .then(function () {
-          // always executed
-        }); 
+       
         middleware("/shop/home","Seller",router)
     }, [id])
 
-  
+    const goToChangeBanner = () => {
+        router.push("/shop/home/changeBanner")    
+    }
+
+    const goToReview = () => {
+        router.push("/shop/viewReview/" + id)
+    }
+
+    const updateShopInfo = () => {
+        router.push("/shop/updateShop/" + id)
+    }
+
     return(
         <div>
             <Navbar/>
@@ -82,13 +96,16 @@ export default function Home(){
                         <label className={style["shop-statistic-title"]}>Success Transaction</label>
                         <label className={style["shop-statistic-detail"]}>{shop.NumberOfSales}</label>
                     </div>
+                    
                 </div>
+                <button onClick={() => goToReview()}>View Review</button>
+                <button onClick={() => updateShopInfo()}>Update Shop Info</button>
                 <Cards>
                 { products ? 
                     products.map((product:any) => {
                         // console.log(product)
                         return(
-                            <Card key={product.ID} details={product}></Card>
+                            <CardShop key={product.ID} details={product}></CardShop>
                         ) 
                     }) : console.log('not yet')
                 }
@@ -97,8 +114,13 @@ export default function Home(){
                     <div className={style["plus-button"]}>
                         +
                     </div>
-                    
                 </div>
+                <div className={style["add-banner-button"]} onClick={() => goToChangeBanner()}>
+                    <div className={style["banner-button"]}>
+                        Banner
+                    </div>
+                </div>
+                
             <Footer/>
         </div>
     )

@@ -1,7 +1,7 @@
 package model
 
 type Product struct {
-	ID                         int                      `pg:"pk, bigserial"`
+	ID                         int                      `json: "id"`
 	ProductName                string                   `json: "name"`
 	ProductPrice               int                      `json: "price"`
 	Stock                      int                      `json: "stock"`
@@ -16,6 +16,11 @@ type Product struct {
 	Shop                       Shop                     `json: "shop"`
 	ProductSubCategory         ProductSubCategory       `json: "product_sub_category"`
 	ProductSubCategoryDetail   ProductSubCategoryDetail `json: "product_sub_category_detail"`
+	Url                        string
+	Sold                       int
+	Rating                     int
+	Reviewed                   int
+	Point                      int
 }
 
 type Brand struct {
@@ -38,6 +43,16 @@ type Shop struct {
 	NumberOfSales       int     `json: "number_of_sales" pg:",notnull"`
 	Description         string  `json: "description"`
 	Email               string  `json: "email"`
+	Sold                int
+	RatingShop          float64
+	RatingQuestion1     float64
+	RatingQuestion2     float64
+	RatingQuestion3     float64
+	Reviewed            int
+	PointQuestion1      int
+	PointQuestion2      int
+	PointQuestion3      int
+	PointShop           int
 }
 
 type ProductSubCategory struct {
@@ -57,8 +72,10 @@ type ProductSubCategoryDetail struct {
 type Cart struct {
 	AccountID int     `json: "account_id"`
 	Quantity  int     `json: "quantity"`
-	ID        int     `pg:"pk, bigserial"`
+	ID        int     `json: "id"`
 	ProductID int     `json: "product_id"`
+	ShopID    int     `json: "shop"`
 	Product   Product `json: "product"`
 	Account   Account `json: "account"`
+	Shop      Shop    `json: "shop"`
 }

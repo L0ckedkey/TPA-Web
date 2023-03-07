@@ -4,8 +4,37 @@ import logo from "../assets/laptop_footer.png"
 import Image from "next/image";
 import { ThemeContext } from './theme'
 import { useContext } from 'react'
+import { useRouter } from "next/router";
 
 export default function Footer(){
+
+    const router = useRouter()
+
+    const goToLoginRegister = () =>{
+        router.push("/signIn")
+    }
+
+    const goToAward = () =>{
+        router.push("/Information/Award")
+    }
+
+
+    const goToAboutNewEgg = () =>{
+        router.push("/Information/aboutNewEgg")
+    }
+
+    const goToHourLocation = () => {
+        router.push("/Information/hoursLocation")
+    }
+
+    const goToWishlist = () => {
+        router.push("/wishlist")
+    }
+
+    const goToEmailNotification = () => {
+        router.push("/Information/emailNotification")
+    }
+
     const {theme, setNewTheme} = useContext(ThemeContext)
     return(
         <div className={style["drop"]} style={{backgroundColor: theme.footerColor2}}>
@@ -47,13 +76,13 @@ export default function Footer(){
                     <div className={style["content"]}>
                         <div className={style["header-content"]}>MY ACCOUNT</div>
                         <div className={style["content-detail"]}>
-                            <Link href="/signIn"><div className={style["font-color-white"]}>Login/Register</div></Link>
+                            <Link href="/signIn"><div className={style["font-color-white"]} onClick={() => goToLoginRegister()}>Login/Register</div></Link>
                             <a>Order History</a>
                             <a>Returns History</a>
                             <a>Address Book</a>
-                            <a>Wish Lists</a>
+                            <a onClick={() => goToWishlist()}>Wish Lists</a>
                             <a>My Build Lists</a>
-                            <a>Email Notification</a>
+                            <a onClick={() => goToEmailNotification()}>Email Notification</a>
                             <a>Subscription Order</a>
                             <a>Auto Notifications</a>
                         </div>
@@ -61,10 +90,10 @@ export default function Footer(){
                     <div className={style["content"]}>
                         <div className={style["header-content"]}>COMPANY INFORMATION</div>
                         <div className={style["content-detail"]}>
-                            <a>About Newegg</a>
+                            <a onClick={() => goToAboutNewEgg()}>About Newegg</a>
                             <a>Investor Relations</a>
-                            <a>Awards/Rankings</a>
-                            <a>Hours and Locations</a>
+                            <a onClick={() => goToAward}>Awards/Rankings</a>
+                            <a onClick={() => goToHourLocation()}>Hours and Locations</a>
                             <a>Press Inqui</a>
                             <a>My Build Lists</a>
                             <a>Email Notification</a>

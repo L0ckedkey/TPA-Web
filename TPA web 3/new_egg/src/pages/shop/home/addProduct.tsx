@@ -6,11 +6,14 @@ import style from '../../../styles/shops.module.css'
 import { useRouter } from 'next/router';
 import Axios from 'axios'
 import https from 'https';
+import handleFileUpload from "@/utiil/firebase";
+
 export default function AddProduct(){
     const [productID, setProductID] = useState('');
     const [productCategoryID, setProductCategoryID] = useState(0);
     const [productSubCategoryID, setProductSubCategoryID] = useState(0);
     const [productSubCategoryDetailID, setProductSubCategoryDetailID] = useState(0)
+    const [url, setUrl] = useState('')
     const [brandID, setBrandID] = useState(0)
     const [productPrice, setProductPrice] = useState(0)
     const [rating, setRating] = useState(0);
@@ -47,6 +50,12 @@ export default function AddProduct(){
         getCurName()
     }, [])
 
+    async function handleFileChange(event:any) {
+        const file = event.target.files[0];
+        var files = await handleFileUpload(file);
+        setUrl(files)
+    }
+
     const addProduct = async() =>{
         Axios.get(link,{
             params: {
@@ -59,6 +68,7 @@ export default function AddProduct(){
                 ProductSubCategoryDetailID: productSubCategoryDetailID,
                 ShopID: shopID,
                 description: description,
+                Url: url
             }
         }).then(function (response) {
             console.log(response);
@@ -215,6 +225,7 @@ export default function AddProduct(){
                     <input type="text" placeholder='Power Supply' id="first-name" onChange={(event) => setPowerSupply(parseInt(event.target.value))}></input>
                     </div> : <></>
                 }
+                <input type="file" onChange={handleFileChange} />
                 <button onClick={() => addProduct()}>Add Product</button>
             </div>                
             <Footer/>

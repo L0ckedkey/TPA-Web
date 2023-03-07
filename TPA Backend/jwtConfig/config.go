@@ -7,19 +7,23 @@ import (
 var JWT_KEY = []byte(";OEJFGBOIebgoweibgoweigb")
 
 type JWTClaim struct {
-	Name  string
-	ID    int
-	Email string
-	Role  string
+	Name             string
+	ID               int
+	Email            string
+	Role             string
+	NewsLetterStatus string
+	PhoneNumber      string
 	jwt.RegisteredClaims
 }
 
 type JWTClaimSeller struct {
-	Name   string
-	ID     int
-	Email  string
-	Role   string
-	ShopID int
+	Name             string
+	ID               int
+	Email            string
+	Role             string
+	ShopID           int
+	NewsLetterStatus string
+	PhoneNumber      string
 	jwt.RegisteredClaims
 }
 

@@ -15,6 +15,40 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+func ChangePassword(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers:", "Origin, Content-Type, X-Auth-Token, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+
+	var account = *&model.Account{}
+	db := databaseUtil.GetConnection()
+	email := r.URL.Query().Get("email")
+	fmt.Println(email)
+	fmt.Println(r.URL.Query().Get("password"))
+	password, _ := bcrypt.GenerateFromPassword([]byte(r.URL.Query().Get("password")), bcrypt.DefaultCost)
+	hashedPassword := string(password)
+	// fmt.Println(password)
+	// _, err := db.Model(&account).Where("email = ?", email).Set("password = ?", ' ').Update()
+	_, error := db.Model(&account).Where("email = ?", email).Set("password = ?", hashedPassword).Update()
+
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	// json.NewEncoder(w).Encode("Error change password")
+	// 	return
+	// }
+
+	if error != nil {
+		fmt.Println(error)
+		json.NewEncoder(w).Encode("Error change password")
+		return
+	}
+
+	json.NewEncoder(w).Encode("Success")
+	db.Close()
+}
+
 func CreateAccount(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -31,8 +65,18 @@ func CreateAccount(w http.ResponseWriter, r *http.Request) {
 	firstName := r.URL.Query().Get("firstName")
 	lastName := r.URL.Query().Get("lastName")
 	phoneNumber := r.URL.Query().Get("phoneNumber")
+	passwordInput := r.URL.Query().Get("password")
+
+	agreement := r.URL.Query().Get("agreement")
+	fmt.Println(len(email))
+
+	if len(email) == 0 || len(passwordInput) == 0 || len(firstName) == 0 || len(phoneNumber) == 0 || len(firstName) == 0 {
+		json.NewEncoder(w).Encode("Error")
+		db.Close()
+		return
+	}
+
 	password, _ := bcrypt.GenerateFromPassword([]byte(r.URL.Query().Get("password")), bcrypt.DefaultCost)
-	agreement := r.URL.Query().Get("Agreement")
 	hashedPassword := string(password)
 
 	fmt.Println()
@@ -46,8 +90,10 @@ func CreateAccount(w http.ResponseWriter, r *http.Request) {
 		FirstName:        firstName,
 		LastName:         lastName,
 		PhoneNumber:      phoneNumber,
-		Role:             "Admin",
+		Role:             "Customer",
 		NewsLetterStatus: agreement,
+		Status:           "Active",
+		Money:            0,
 	}
 	fmt.Println(credential)
 	// masukin ke db pkae gorm
@@ -59,6 +105,131 @@ func CreateAccount(w http.ResponseWriter, r *http.Request) {
 	db.Close()
 }
 
+func ChangeAccountStatus(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers:", "Origin, Content-Type, X-Auth-Token, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+
+	id := r.URL.Query().Get("id")
+
+	var account = *&model.Account{}
+	db := databaseUtil.GetConnection()
+	err := db.Model(&account).Where("id = ?", id).Select()
+
+	if err != nil {
+		fmt.Println(err)
+		json.NewEncoder(w).Encode(err)
+		return
+	}
+
+	if account.Role == "Seller" {
+		var shop = *&model.Shop{}
+
+		err := db.Model(&shop).Where("email = ?", account.Email).Select()
+
+		if err != nil {
+			fmt.Println(err)
+			json.NewEncoder(w).Encode("error")
+			return
+		}
+
+		if account.Status == "Active" {
+			_, err := db.Model(&account).Where("id = ?", id).Set("status = ?", "Banned").Update()
+			_, error := db.Model(&shop).Where("email = ?", account.Email).Set("status = ?", "Banned").Update()
+			if err != nil {
+				fmt.Println(err)
+				json.NewEncoder(w).Encode(err)
+				return
+			}
+
+			if error != nil {
+				fmt.Println(error)
+				json.NewEncoder(w).Encode(error)
+				return
+			}
+		} else {
+			_, err := db.Model(&account).Where("id = ?", id).Set("status = ?", "Active").Update()
+			_, error := db.Model(&shop).Where("email = ?", account.Email).Set("status = ?", "Active").Update()
+			fmt.Println("set Active")
+			if err != nil {
+				fmt.Println(err)
+				json.NewEncoder(w).Encode(err)
+				return
+			}
+			if error != nil {
+				fmt.Println(error)
+				json.NewEncoder(w).Encode(error)
+				return
+			}
+		}
+		json.NewEncoder(w).Encode("Success")
+
+	} else {
+		if account.Status == "Active" {
+			_, err := db.Model(&account).Where("id = ?", id).Set("status = ?", "Banned").Update()
+
+			if err != nil {
+				fmt.Println(err)
+				json.NewEncoder(w).Encode(err)
+				return
+			}
+		} else {
+			_, err := db.Model(&account).Where("id = ?", id).Set("status = ?", "Active").Update()
+			fmt.Println("set Active")
+			if err != nil {
+				fmt.Println(err)
+				json.NewEncoder(w).Encode(err)
+				return
+			}
+		}
+		json.NewEncoder(w).Encode("Success")
+	}
+	db.Close()
+}
+
+func ChangeNewsletterStatus(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers:", "Origin, Content-Type, X-Auth-Token, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+
+	id, error := strconv.Atoi(r.URL.Query().Get("id"))
+	if error != nil {
+		fmt.Println(error)
+
+	}
+	var account = *&model.Account{}
+	db := databaseUtil.GetConnection()
+	err := db.Model(&account).Where("id = ?", id).Select()
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if account.NewsLetterStatus == "yes" {
+		_, error := db.Model(&account).Where("id = ?", id).Set("news_letter_status = ?", "no").Update()
+
+		if error != nil {
+			fmt.Println(error)
+			json.NewEncoder(w).Encode("Error")
+		}
+
+	} else {
+		_, error := db.Model(&account).Where("id = ?", id).Set("news_letter_status = ?", "yes").Update()
+		if error != nil {
+			fmt.Println(error)
+			json.NewEncoder(w).Encode("Error")
+		}
+
+	}
+
+	json.NewEncoder(w).Encode("Success")
+
+}
+
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -68,15 +239,16 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 
 	var accounts []*model.Account
 	var db = databaseUtil.GetConnection()
-
-	var err = db.Model(&accounts).Where("role != ?", "Admin").Select()
+	status := fmt.Sprintf("%%%s%%", r.URL.Query().Get("filter"))
+	fmt.Println(status)
+	var err = db.Model(&accounts).Where("status LIKE ?", status).Where("role != ?", "Admin").Select()
 
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	json.NewEncoder(w).Encode(accounts)
-
+	db.Close()
 }
 
 func GetAllUsersForBlastEmail(w http.ResponseWriter, r *http.Request) {
@@ -96,7 +268,7 @@ func GetAllUsersForBlastEmail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(accounts)
-
+	db.Close()
 }
 
 func GetUserFromToken(w http.ResponseWriter, r *http.Request) {
@@ -175,6 +347,7 @@ func GetUserFromToken(w http.ResponseWriter, r *http.Request) {
 	// 	ID:    int(userID),
 	// 	Email: email,
 	// }
+
 }
 
 func CheckAccount(w http.ResponseWriter, r *http.Request) {
@@ -195,12 +368,79 @@ func CheckAccount(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	if account.Email != " " {
+	if account.Email != " " && account.Role != "Banned" {
 		json.NewEncoder(w).Encode(&account)
+	} else {
+		json.NewEncoder(w).Encode("Invalid Email or Banned")
 	}
 
 	db.Close()
 	// fmt.Println("hai")
+}
+
+func CheckAccountOnID(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers:", "Origin, Content-Type, X-Auth-Token, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+
+	var db = databaseUtil.GetConnection()
+
+	id, error := strconv.Atoi(r.URL.Query().Get("id"))
+
+	if error != nil {
+		fmt.Println(error)
+		json.NewEncoder(w).Encode("error")
+		db.Close()
+		return
+	}
+	var account = new(model.Account)
+	var err = db.Model(account).Where("id = ?", id).Select()
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	if account.Email != " " && account.Role != "Banned" {
+		json.NewEncoder(w).Encode(&account)
+	} else {
+		json.NewEncoder(w).Encode("Invalid Email or Banned")
+	}
+
+	db.Close()
+	// fmt.Println("hai")
+}
+
+func UpdatePhoneNumber(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers:", "Origin, Content-Type, X-Auth-Token, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+
+	var db = databaseUtil.GetConnection()
+
+	phoneNumber := r.URL.Query().Get("phoneNumber")
+	id, error := strconv.Atoi(r.URL.Query().Get("id"))
+
+	if error != nil {
+		fmt.Println(error)
+		json.NewEncoder(w).Encode("error")
+		return
+	}
+
+	var account = new(model.Account)
+	var _, err = db.Model(account).Where("id = ?", id).Set("phone_number = ?", phoneNumber).Update()
+
+	if err != nil {
+		fmt.Println(err)
+		json.NewEncoder(w).Encode("error")
+		return
+	} else {
+		json.NewEncoder(w).Encode("success")
+	}
+
+	db.Close()
 }
 
 func CheckPassword(w http.ResponseWriter, r *http.Request) {
@@ -233,10 +473,13 @@ func CheckPassword(w http.ResponseWriter, r *http.Request) {
 	if bcrypt.CompareHashAndPassword([]byte(account.Password), []byte(password)) == nil {
 		isMatch = true
 	}
+
 	fmt.Println(isMatch)
+
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	if isMatch {
 		// json.NewEncoder(w).Encode(&account)
 		expTime := time.Now().Add(time.Hour * 2)
@@ -251,11 +494,13 @@ func CheckPassword(w http.ResponseWriter, r *http.Request) {
 		if account.Role == "Seller" {
 			fmt.Println(shop.ID)
 			token := jwt.NewWithClaims(jwt.SigningMethodHS256, config.JWTClaimSeller{
-				Name:   account.FirstName + " " + account.LastName,
-				Email:  account.Email,
-				ID:     account.ID,
-				Role:   account.Role,
-				ShopID: shop.ID,
+				Name:             account.FirstName + " " + account.LastName,
+				Email:            account.Email,
+				ID:               account.ID,
+				Role:             account.Role,
+				ShopID:           shop.ID,
+				NewsLetterStatus: account.NewsLetterStatus,
+				PhoneNumber:      account.PhoneNumber,
 				RegisteredClaims: jwt.RegisteredClaims{
 					Issuer:    strconv.Itoa(99),
 					ExpiresAt: jwt.NewNumericDate(expTime),
@@ -287,10 +532,12 @@ func CheckPassword(w http.ResponseWriter, r *http.Request) {
 			json.NewEncoder(w).Encode(key)
 		} else {
 			token := jwt.NewWithClaims(jwt.SigningMethodHS256, config.JWTClaim{
-				Name:  account.FirstName + " " + account.LastName,
-				Email: account.Email,
-				ID:    account.ID,
-				Role:  account.Role,
+				Name:             account.FirstName + " " + account.LastName,
+				Email:            account.Email,
+				ID:               account.ID,
+				Role:             account.Role,
+				NewsLetterStatus: account.NewsLetterStatus,
+				PhoneNumber:      account.PhoneNumber,
 				RegisteredClaims: jwt.RegisteredClaims{
 					Issuer:    strconv.Itoa(99),
 					ExpiresAt: jwt.NewNumericDate(expTime),
@@ -313,6 +560,60 @@ func CheckPassword(w http.ResponseWriter, r *http.Request) {
 			Password: "null",
 		}
 		json.NewEncoder(w).Encode(account)
+	}
+
+	db.Close()
+	// fmt.Println("hai")
+}
+
+func ChangePasswordOnly(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	var db = databaseUtil.GetConnection()
+
+	id, error := strconv.Atoi(r.URL.Query().Get("id"))
+	if error != nil {
+		fmt.Println(error)
+		json.NewEncoder(w).Encode("error")
+
+	}
+	password := r.URL.Query().Get("oldPassword")
+
+	var account = new(model.Account)
+	var err = db.Model(account).Where("id = ?", id).First()
+
+	var isMatch = false
+
+	// name := account.FirstName + " " + account.LastName
+	if bcrypt.CompareHashAndPassword([]byte(account.Password), []byte(password)) == nil {
+		isMatch = true
+	}
+
+	if err != nil {
+		fmt.Println(err)
+		json.NewEncoder(w).Encode("error")
+
+	}
+
+	if isMatch {
+		password, _ := bcrypt.GenerateFromPassword([]byte(r.URL.Query().Get("newPassword")), bcrypt.DefaultCost)
+		hashedPassword := string(password)
+		// fmt.Println(password)
+		// _, err := db.Model(&account).Where("email = ?", email).Set("password = ?", ' ').Update()
+		_, error := db.Model(account).Where("id = ?", id).Set("password = ?", hashedPassword).Update()
+		if error != nil {
+			fmt.Println(error)
+			json.NewEncoder(w).Encode("error")
+
+		}
+		json.NewEncoder(w).Encode("success")
+
+	} else {
+		json.NewEncoder(w).Encode("wrong old password")
+
 	}
 
 	db.Close()
