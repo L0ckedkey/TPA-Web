@@ -35,6 +35,46 @@ export default function Footer(){
         router.push("/Information/emailNotification")
     }
 
+    const goToOrderHistory = () => {
+        router.push("user/orderHistory")
+    }
+
+    const goToFacebook = () => {
+        router.push("https://www.facebook.com/Newegg")
+    }
+
+    const goToTwitter = () => {
+        router.push("https://twitter.com/Newegg")
+    }
+
+    const goToInstagram = () => {
+        router.push("https://www.instagram.com/newegg/")
+    }
+
+    const goToPinterest = () => {
+        router.push("https://www.pinterest.com/newegg/")
+    }
+
+    const goToLinkedIn = () => {
+        router.push("https://www.linkedin.com/company/newegg-com/")
+    }
+
+    const goToYoutube = () => {
+        router.push("https://www.youtube.com/user/newegg")
+    }
+
+    const goToTwitch = () => {
+        router.push("https://www.twitch.tv/newegg")
+    }
+
+    const goToDiscord = () => {
+        router.push("https://discord.com/invite/newegg")
+    }
+
+    const goToTikTok = () => {
+        router.push("https://www.tiktok.com/@newegg")
+    }
+
     const {theme, setNewTheme} = useContext(ThemeContext)
     return(
         <div className={style["drop"]} style={{backgroundColor: theme.footerColor2}}>
@@ -77,7 +117,7 @@ export default function Footer(){
                         <div className={style["header-content"]}>MY ACCOUNT</div>
                         <div className={style["content-detail"]}>
                             <Link href="/signIn"><div className={style["font-color-white"]} onClick={() => goToLoginRegister()}>Login/Register</div></Link>
-                            <a>Order History</a>
+                            <a onClick={() => goToOrderHistory()}>Order History</a>
                             <a>Returns History</a>
                             <a>Address Book</a>
                             <a onClick={() => goToWishlist()}>Wish Lists</a>
@@ -136,47 +176,47 @@ export default function Footer(){
                     </div>
                 </div>
                 <div className={style["footer-bottom-right"]}>
-                    <div>
+                    <div onClick={() => goToTwitter()}>
                         <div className={style["round"]} style={{backgroundColor: theme.iconColor}}>
                             <i className="uil uil-twitter" style={{color: theme.primaryColor}}></i>
                         </div>
                     </div>
-                    <div>
+                    <div onClick={() => goToFacebook()}>
                         <div className={style["round"]} style={{backgroundColor: theme.iconColor}}>
                             <i className="uil uil-facebook-f" style={{color: theme.primaryColor}}></i>
                         </div>
                     </div>
-                    <div>
+                    <div onClick={() => goToInstagram()}>
                         <div className={style["round"]} style={{backgroundColor: theme.iconColor}}>
                             <i className="uil uil-instagram-alt" style={{color: theme.primaryColor}}></i>
                         </div>
                     </div>
-                    <div>
+                    <div onClick={() => goToLinkedIn()}>
                         <div className={style["round"]} style={{backgroundColor: theme.iconColor}}>
                             <i className="uil uil-linkedin" style={{color: theme.primaryColor}}></i>
                         </div>
                     </div>
-                    <div>
+                    <div onClick={() => goToPinterest()}>
                         <div className={style["round"]} style={{backgroundColor: theme.iconColor}}>
                             <i className="uil uil-instagram-alt" style={{color: theme.primaryColor}}></i>
                         </div>
                     </div>
-                    <div>
+                    <div onClick={() => goToYoutube()}>
                         <div className={style["round"]} style={{backgroundColor: theme.iconColor}}> 
                             <i className="uil uil-youtube" style={{color: theme.primaryColor}}></i>
                         </div>
                     </div>
-                    <div>
+                    <div onClick={() => goToTwitch()}>
                         <div className={style["round"]} style={{backgroundColor: theme.iconColor}}>
                             <i className="uil uil-instagram-alt" style={{color: theme.primaryColor}}></i>
                         </div>
                     </div>
-                    <div>
+                    <div onClick={() => goToDiscord()}>
                         <div className={style["round"]} style={{backgroundColor: theme.iconColor}}>
                             <i className="uil uil-discord" style={{color: theme.primaryColor}}></i>
                         </div>
                     </div>
-                    <div>
+                    <div onClick={() => goToTikTok()}>
                         <div className={style["round"]} style={{backgroundColor: theme.iconColor}}>
                             <i className="uil uil-instagram-alt" style={{color: theme.primaryColor}}></i>
                         </div>

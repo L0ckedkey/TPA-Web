@@ -3,6 +3,7 @@ import Navbar from "@/components/navbar"
 import Axios from "axios";
 import { useRouter } from "next/router"
 import { useState, useEffect } from "react";
+import style from '../../../styles/wishlists.module.css'
 
 export default function GetDetail(){
     const router = useRouter()
@@ -126,18 +127,25 @@ function DetailCard(props:any){
     }
 
     return(
-        <div>
-            <h2>{props.Product.ProductName}</h2>
+        <div  className={style["wishlist-detail-container"]}>
+            
             <img src={props.Product.Url}></img>
-            <h3>{props.Product.ProductPrice}</h3>
-            <h3>{props.Quantity}</h3>
-            <button onClick={() => deleteProduct()}>Delete</button>
-            <div>
-                <button onClick={handleDecrement}>-</button>
-                <input type="text" value={quantity}/>
-                <button onClick={handleIncrement}>+</button>
+            <div className={style["wishlist-detail-container-inside"]}>
+                <h2>{props.Product.ProductName}</h2>
+                <h3>{props.Product.ProductPrice}</h3>
+                <h3>{props.Quantity}</h3>
+                <div>
+                
+                <div className={style["button-style"]}>
+                    <button onClick={handleDecrement}>-</button>
+                    <input type="text" value={quantity}/>
+                    <button onClick={handleIncrement}>+</button>
+                </div>
+                <button onClick={() => updateDetail()}>Update Quantity</button><br></br>
+                <button onClick={() => deleteProduct()}>Delete</button>
             </div>
-            <button onClick={() => updateDetail()}>Update Quantity</button>
+            </div>
+            
         </div>
     )
 }

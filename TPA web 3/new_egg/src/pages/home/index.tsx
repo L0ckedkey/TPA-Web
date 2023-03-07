@@ -135,16 +135,22 @@ export default function Home(){
                 </div>
                 
             </div>
-            {
-                bestShop ? bestShop.map((bestShopSingle:any) => {
-                    return(<h3>Best Shop : {bestShopSingle.Name}</h3>)
-                }):null
-            }
-            <select value={filterBy} onChange={(event) => setFilterBy(event.target.value)}>
-            <option value={""}></option>
+            
+            <select value={filterBy} onChange={(event) => setFilterBy(event.target.value)} className={style["filter-style"]}>
+                <option value={""}></option>
                 <option value={"priceASC"}>Price Lowest to Highest</option>
                 <option value={"priceDESC"}>Price Highest to Lowest</option>
             </select>
+            <h3 className={style["best-shop"]}>Best Shop</h3>
+            <div className={style["best-shop-container"]}>
+            {
+                bestShop ? bestShop.map((bestShopSingle:any) => {
+                    return(
+                        <h3 className={style["best-shop-style"]}>{bestShopSingle.Name}</h3>
+                    )
+                }):null
+            }
+            </div>
             <List orderBy={filterBy} search={search} products={products}/>
             {
                 role === "Seller" ? <button className={style["add-product-button"]} onClick={() => goToShop()}>Go To Shop</button> : role ==="Admin" ? <button onClick={() => goToAdmin()} className={style["add-product-button"]}>Go To Admin Page</button>: console.log()

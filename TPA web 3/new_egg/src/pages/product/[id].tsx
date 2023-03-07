@@ -194,7 +194,7 @@ export default function main(){
                     <label className={style["shop-description"]}>{shop.Description}</label>
                   </div>
                   <div>
-                    <button className={style["visit-shop-button"]}> <Link href="/shop/[id]" as={`/shop/${shop.ID}`}>Visit Shop</Link></button>
+                    <button className={style["visit-shop-button"]}> <Link href="/shop/[id]" as={`/shop/${shop.ID}`} className={style["decoration-killer"]} >Visit Shop</Link></button>
                   </div>
                   <div>
                     <button className={style["visit-shop-button"]} onClick={isChatting}>Chat</button>
@@ -217,24 +217,46 @@ export default function main(){
             insertToWishlist ? <AddToWishlist accountID={accountID} product={product}/> : null
           }
           <div><br></br></div>
+          <div className={style["shop-recommendation-main-container"]}>
           {
             similiarShops ? 
             similiarShops.map((similiarProduct:any) => {
-              return(<h5>Shop name : {similiarProduct.Shop.Name}</h5>)
+              console.log(similiarProduct);
+              
+              return(
+                <div className={style["shop-recommendation-container"]}>
+                  <label>Name : {similiarProduct.Shop.Name}</label>
+                  <label>Rating : {similiarProduct.Shop.RatingShop}</label>
+                  <label>Sold : {similiarProduct.Shop.Sold}</label>
+                </div>
+              )
             }):<h5>No similiar product</h5>
           }
+
+          </div>
+          <div className={style["product-recommendation-container"]}>
           {
             similiarProducts ? 
             similiarProducts.map((similiarProduct:any) => {
-              return(<h5>name : {similiarProduct.ProductName}</h5>)
+              return(
+                <div className={style["product-recommendation"]}>
+                  <h5>name : {similiarProduct.ProductName}</h5>
+                  <h5>stock : {similiarProduct.Stock}</h5>
+                  <h5>price : {similiarProduct.ProductPrice}</h5>
+                </div>
+              )
             }):<h5>No similiar product</h5>
           }
+          </div>
+          <div  className={style["review-container"]}>
           {
             reviews ?
             reviews.map((review:any) => {
-              return(<ProductReview details={review} key={review.ID}/>)
+              return(
+              <ProductReview details={review} key={review.ID}/> )
             }): <h5>No Review</h5>
           }
+          </div>
           <Footer/>
         </div>
     )

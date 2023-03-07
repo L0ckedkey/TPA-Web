@@ -6,7 +6,7 @@ import Navbar from '@/components/navbar'
 import Footer from '@/components/footer'
 import { getUserID } from '@/utiil/token'
 import  Axios from 'axios'
-
+import style2 from '../../../styles/reviews.module.css'
 
 export default function GetAllReview(){
 
@@ -214,7 +214,7 @@ function ShopReviewCard(props:any){
     }
 
     return(
-        <div>
+        <div className={style2["review-container"]}>
             <h4>Review ID : {props.ID}</h4>
             <h4>Order ID : {props.OrderHeaderID}</h4>
             <h4>Shop ID : {props.ShopID}</h4>
@@ -259,7 +259,7 @@ function ProductReviewCard(props:any){
 
 
     return(
-        <div>
+        <div className={style2["review-container"]}>
             <h4>Order ID : {props.OrderHeaderID}</h4>
             <h4>Point : {props.Point}</h4>
             <h4>Review : {props.Review}</h4>

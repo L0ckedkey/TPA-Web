@@ -78,3 +78,62 @@
     border-radius: 0.5vw;
     cursor: pointer;
 }
+
+.wishlist-detail-container{
+    /* background-color: red; */
+    display: flex;
+    gap: 1vw;
+}
+
+.wishlist-detail-container-inside{
+    font-size: 1vw;
+}
+
+.button-style{
+    font-size: 1vw;
+}
+
+.wishlist-public-container{
+    background-color: rgb(201, 243, 243);
+    padding: 1vw;
+    width: 90vw;
+    margin: auto;
+    border-radius: 0.5vw;
+}
+
+.wishlist-public-container-inside{
+    font-size: 1.8vw;
+    justify-content: space-evenly;
+    display: flex;   
+}
+
+.wishlist-public-container-input{
+    width: 80vw;
+    display: flex;
+    margin: auto;
+    /* background-color: red; */
+    flex-direction: column;
+    gap: 0.5vw;
+}
+
+.wishlist-public-detail-container{
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(217, 248, 248);
+    padding: 1vw;
+    border-radius: 0.5vw;
+}
+
+.wishlist-public-detail{
+    display: flex;
+    align-items: center;
+    width: 90vw;
+    margin: auto;
+}
+
+.wishlist-public-detail-container-big{
+    display: flex;
+    flex-direction: column;
+    gap: 1vw;
+    margin: 1vw;
+}

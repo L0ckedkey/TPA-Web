@@ -1,6 +1,6 @@
 import Axios from "axios"
 import { useEffect, useState } from "react"
-
+import style from '../styles/wishlists.module.css'
 
 export default function ReviewCard(props:any){
     const details = props.details
@@ -96,7 +96,7 @@ export function ReviewWishlist(props:any){
 
     if(props.AccountID == 0){
         return(
-            <div>
+            <div className={style["wishlist-public-detail-container"]}>
                 <h3>Name : Anonymus</h3>
                 <h3>Point : {props.Point}</h3>
                 <h3>Review : {props.Review}</h3>
@@ -104,7 +104,7 @@ export function ReviewWishlist(props:any){
         )
     }else{
         return(
-            <div>
+            <div className={style["wishlist-public-detail-container"]}>
                 <h3>Name : {props.Account.FirstName + " " + props.Account.LastName}</h3>
                 <h3>Point : {props.Point}</h3>
                 <h3>Review : {props.Review}</h3>
