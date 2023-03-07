@@ -1,0 +1,45 @@
+.account-info-container{
+    display: flex;
+    width: 80vw;
+    /* background-color: red; */
+    height: fit-content;
+    flex-direction: column;
+    gap: 1vw;
+    margin: auto;
+}
+
+.account-info-container label{
+    font-size: 1.5vw;
+}
+
+.account-info-container button{
+    font-size: 1.5vw;
+}
+
+.account-info-container input{
+    width: 100%;
+    font-size: 1.5vw;
+}
+
+.account-info-container button{
+    width: 95%;
+    margin-left: 2% ;
+    font-size: 1.5vw;
+    background-color: orange;
+    border-color: rgb(255, 145, 0);
+    cursor: pointer;
+}
+
+.account-info-container button:hover{
+    background-color: rgb(6, 6, 210);
+    color: white;
+    border-color: rgb(255, 145, 0);
+}
+
+.add-on{
+    display: flex;
+    flex-direction: column;
+    width: 80vw;
+    gap: 1vw;
+    margin-bottom: 2vw;
+}

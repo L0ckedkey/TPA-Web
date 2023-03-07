@@ -1,0 +1,41 @@
+.order-header-box{
+    width: 80vw;
+    margin: auto;
+    background-color: rgb(218, 244, 255);
+    margin-bottom: 0.5vw;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    padding: 1vw;
+
+}
+
+.order-detail-container{
+    margin: auto;
+    display: flex;
+    width: 80vw;
+    height: 20vw;
+    border-radius: 10px;
+    border: 0.3vw solid black;
+    align-items: center;
+    padding: 1vw;
+}
+
+.img-container{
+    display: flex;
+    align-items: center;
+    background-color: beige;
+    margin-right: 1vw;
+}
+
+.img-adjust{
+    width: 10vw;
+    height: fit-content;
+}
+
+.order-detail-parent{
+    background-color: rgb(243, 243, 255);
+    width: 80vw;
+    margin: auto;
+    padding: 1.5vw;
+}

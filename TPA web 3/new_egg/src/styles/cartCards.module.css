@@ -1,0 +1,83 @@
+.card-container{
+    /* background-color: red; */
+    width: 80vw;
+    height: fit-content;
+    margin: auto;
+    border: 2px solid black;
+    border-radius: 0.5vw;
+    padding: 0.5vw;
+    margin-bottom: 1vw;
+}
+
+.card-container p{
+   font-size: 1vw;
+}
+
+.card-adjust p{
+    font-size: 1vw;
+ }
+
+ .label-total-price{
+    font-size: 1.5vw;
+ }
+
+
+.card-adjust{
+    display: flex;
+    /* justify-content: center; */
+    align-items: center;
+    margin-bottom: 1vw;
+}
+
+.card-img-adjust{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1vw;
+}
+
+.card-img{
+    width: 10vw;
+    height: 10vw;
+    margin-right: 1vw;
+}
+
+.question{
+    display: flex;
+    /* background-color: red; */
+    width: 18vw;
+    justify-content: space-between;
+}
+
+.question select{
+    width: 5vw;
+    justify-content: space-between;
+}
+
+.question-container{
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    gap: 0.5vw;
+    padding: 1vw;
+    background-color: aquamarine;
+    border-radius: 10px;
+    margin-bottom: 1vw;
+}
+
+
+.cancel-order{
+    background-color: red;
+    color: white;
+    font-size: 1vw;
+    border: none;
+    border-radius: 10px;
+    padding: 0.5vw;
+    margin-bottom: 0.5vw;
+}
+
+.cancel-order:hover{
+    background-color: orange;
+    cursor: pointer;
+}
