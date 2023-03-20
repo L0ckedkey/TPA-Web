@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Router, useRouter } from "next/router";
 import Axios  from "axios"
 import { chownSync } from "fs";
+import { getUserID } from "@/utiil/token";
 
 var totalPrice = 0
 
@@ -55,7 +56,14 @@ export const ShopProducts = (props:any) => {
           {products ? products.map((product:any) => {
             price = price + (product.Product.ProductPrice * product.Quantity)
             // console.log(product)
-            return(<ShopProductCard details={product}/>)
+            return(
+              <div>
+                <ShopProductCard details={product}/>
+               
+              </div>
+
+              
+              )
           }) : null
           }
           <label className={style["label-total-price"]}>Total Price : ${price}</label>
@@ -64,6 +72,9 @@ export const ShopProducts = (props:any) => {
 }
 
 const ShopProductCard = (props:any) => {
+
+  
+
   var product = props.details
   console.log("cart card");
   
@@ -73,6 +84,19 @@ const ShopProductCard = (props:any) => {
 
   const updateLink = "http://localhost:8080/updateCart"
   const deleteLink = "http://localhost:8080/deleteCart"
+  const saveForLaterLink = "http://localhost:8080/addSaveForLater"
+  const [accountID, setAccountID] = useState('')
+
+
+  useEffect(() => {
+
+    const getCurName = async () => {
+        var name = await getUserID()
+        setAccountID(name)
+    }
+    
+    getCurName()      
+}, [])
 
   const handleIncrement = () => {
     if(quantity < product.Product.Stock){
@@ -117,6 +141,23 @@ const ShopProductCard = (props:any) => {
       });
   }
 
+  const saveForLater = () => {
+    Axios.get(saveForLaterLink,{
+      params:{
+          accountID : accountID,
+          productID:  product.Product.ID, 
+          quantity:quantity
+      }
+    })
+    .then(response => {
+        console.log(response.data)
+        window.location.reload()
+    })
+    .catch(error => {
+      console.log(error);
+    });
+  }
+
   return(
   <div key={product.ID} className={style["card-adjust"]}>
       <img className={style["card-img"]} src={product.Product.Url} alt={"error"}></img>
@@ -132,6 +173,7 @@ const ShopProductCard = (props:any) => {
       </div>
       <button onClick={() => updateCart()}>Update</button>
       <button onClick={() => deleteCart()}>Delete</button>
+      <button onClick={() => saveForLater()}>Save for later</button>
   </div>
   )
 }

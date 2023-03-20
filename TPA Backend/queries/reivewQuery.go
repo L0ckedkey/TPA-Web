@@ -173,7 +173,7 @@ func SetShopReview(w http.ResponseWriter, r *http.Request) {
 		PointQuestion2: pointQuestion2,
 		PointQuestion3: pointQuestion3,
 		ShopPoint:      shopPoint,
-		TimePosted:     time.Now(),
+		TimePosted:     time.Now().UTC(),
 	}
 
 	_, err = db.Model(&reviewShop).Insert()
@@ -355,7 +355,24 @@ func GetShopReviewesFilterByTime(w http.ResponseWriter, r *http.Request) {
 			db.Close()
 			return
 		}
+	}else if filterBy == "Week Ago" {
+
+		now := time.Now()
+		yesterdayStart := time.Date(now.Year(), now.Month(), now.Day()-1, 0, 0, 0, 0, time.Now().Location())
+		yesterdayEnd := time.Date(now.Year(), now.Month(), now.Day()-1, 23, 59, 59, 999999999, time.Now().Location())
+		
+
+		err = db.Model(&shopReview).Where("time_posted BETWEEN ? AND ?", yesterdayStart, yesterdayEnd).Where("review  LIKE ?", search).Where("review_shop.shop_id = ?", shopID).Order("time_posted DESC").Relation("Account").Relation("Shop").Relation("OrderHeader").Select()
+
+		if err != nil {
+			fmt.Println("Error after select")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode("Error")
+			db.Close()
+			return
+		}
 	}
+	
 
 	json.NewEncoder(w).Encode(shopReview)
 	db.Close()
@@ -515,6 +532,7 @@ func DeleteShopReview(w http.ResponseWriter, r *http.Request) {
 
 	db := databaseUtil.GetConnection()
 	reviewID, err := strconv.Atoi(r.URL.Query().Get("reviewID"))
+	accountID, err := strconv.Atoi(r.URL.Query().Get("accountID"))
 
 	if err != nil {
 		fmt.Println(("error while parsing review id in delete review"))
@@ -524,21 +542,29 @@ func DeleteShopReview(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var productReview []*model.ReviewShop
+	var productReview model.ReviewShop
 
-	_, err = db.Model(&productReview).Where("id = ?", reviewID).Delete()
+	err = db.Model(&productReview).Where("id = ?", reviewID).Select()
 
-	if err != nil {
-		fmt.Println("Error after delte shop review")
-		fmt.Println(err)
-		json.NewEncoder(w).Encode("Error")
+	if productReview.AccountID == accountID {
+		_, err = db.Model(&productReview).Where("id = ?", reviewID).Delete()
+
+		if err != nil {
+			fmt.Println("Error after delte shop review")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode("Error")
+			db.Close()
+			return
+		}
+
+		json.NewEncoder(w).Encode("Success")
+		db.Close()
+		return
+	} else {
+		json.NewEncoder(w).Encode("Credential not match")
 		db.Close()
 		return
 	}
-
-	json.NewEncoder(w).Encode("Success")
-	db.Close()
-	return
 
 }
 
@@ -555,6 +581,7 @@ func UpdateShopReview(w http.ResponseWriter, r *http.Request) {
 	newQ2, err := strconv.Atoi(r.URL.Query().Get("newQ2"))
 	newQ3, err := strconv.Atoi(r.URL.Query().Get("newQ3"))
 	shopPoint, err := strconv.Atoi(r.URL.Query().Get("shopPoint"))
+	accountID, err := strconv.Atoi(r.URL.Query().Get("accountID"))
 	review := r.URL.Query().Get("review")
 
 	if err != nil {
@@ -565,9 +592,9 @@ func UpdateShopReview(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Println(reviewID)
-	var shopReview *model.ReviewShop
+	var shopReview model.ReviewShop
 
-	err = db.Model(&shopReview).Where("id = ?", reviewID).Select() 
+	err = db.Model(&shopReview).Where("id = ?", reviewID).Select()
 
 	if err != nil {
 		fmt.Println("Error after select shop review update reviwe")
@@ -577,80 +604,98 @@ func UpdateShopReview(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var shop *model.Shop
+	if shopReview.AccountID == accountID {
+		var shop model.Shop
 
-	_, err = db.Model(shop).Where("id = ?", shopReview.ShopID).Set("point_question1 = ?", shop.PointQuestion1-shopReview.PointQuestion1).Set("point_question1 = ?", shop.PointQuestion2-shopReview.PointQuestion2).Set("point_question3 = ?", shop.PointQuestion3-shopReview.PointQuestion3).Set("shop_point = ?", shop.PointShop-shopReview.ShopPoint).Update()
+		_, err = db.Model(&shop).Where("id = ?", shopReview.ShopID).Set("point_question1 = ?", shop.PointQuestion1-shopReview.PointQuestion1).Set("point_question2 = ?", shop.PointQuestion2-shopReview.PointQuestion2).Set("point_question3 = ?", shop.PointQuestion3-shopReview.PointQuestion3).Set("point_shop = ?", shop.PointShop-shopReview.ShopPoint).Update()
 
-	if err != nil {
-		fmt.Println("Error after update point question in update reviwe")
-		fmt.Println(err)
-		json.NewEncoder(w).Encode("Error")
+		if err != nil {
+			fmt.Println("Error after update point question in update reviwe")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode("Error")
+			db.Close()
+			return
+		}
+		fmt.Println(shopReview.ShopID)
+		err = db.Model(&shopReview).Where("id = ?", reviewID).Select()
+
+		if err != nil {
+			fmt.Println("Error after select 2 shop review update reviwe 1")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode("Error")
+			db.Close()
+			return
+		}
+
+		_, err = db.Model(&shop).Where("id = ?", shopReview.ShopID).Set("point_question1 = ?", shop.PointQuestion1+newQ1).Set("point_question2 = ?", shop.PointQuestion2+newQ2).Set("point_question3 = ?", shop.PointQuestion3+newQ3).Set("point_shop = ?", shop.PointShop+shopPoint).Update()
+
+		if err != nil {
+			fmt.Println("Error after update point + in update reviwe")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode("Error")
+			db.Close()
+			return
+		}
+
+		err = db.Model(&shopReview).Where("id = ?", reviewID).Select()
+
+		if err != nil {
+			fmt.Println("Error after select 2 shop review update reviwe 2")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode("Error")
+			db.Close()
+			return
+		}
+
+		fmt.Println(shop.Reviewed)
+
+		err = db.Model(&shop).Where("id = ?", shopReview.ShopID).Select()
+
+		if err != nil {
+			fmt.Println("Error after update point question in update reviwe")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode("Error")
+			db.Close()
+			return
+		}
+
+		_, err = db.Model(&shop).Where("id = ?", shopReview.ShopID).Set("rating_question1 = ?", shop.PointQuestion1/shop.Reviewed).Set("rating_question2 = ?", shop.PointQuestion2/shop.Reviewed).Set("rating_question3 = ?", shop.PointQuestion3/shop.Reviewed).Set("rating_shop = ?", shop.PointShop/shop.Reviewed).Update()
+
+		if err != nil {
+			fmt.Println("Error after update rating question in update reviwe")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode("Error")
+			db.Close()
+			return
+		}
+
+		err = db.Model(&shopReview).Where("id = ?", reviewID).Select()
+
+		if err != nil {
+			fmt.Println("Error after select 22 shop review update reviwe")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode("Error")
+			db.Close()
+			return
+		}
+
+		_, err = db.Model(&shopReview).Where("id = ?", reviewID).Set("review = ?", review).Set("point_question1 = ?", newQ1).Set("point_question2 = ?", newQ2).Set("point_question3 = ?", newQ3).Set("shop_point = ?", shopPoint).Update()
+
+		if err != nil {
+			fmt.Println("Error after update point question 2 in update reviwe")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode("Error")
+			db.Close()
+			return
+		}
+
+		json.NewEncoder(w).Encode("Success")
+		db.Close()
+		return
+	} else {
+		json.NewEncoder(w).Encode("Credential not match")
 		db.Close()
 		return
 	}
-
-	err = db.Model(shopReview).Where("id = ?", shopReview.ShopID).Select()
-
-	if err != nil {
-		fmt.Println("Error after select 2 shop review update reviwe")
-		fmt.Println(err)
-		json.NewEncoder(w).Encode("Error")
-		db.Close()
-		return
-	}
-
-	_, err = db.Model(shop).Where("id = ?", shopReview.ShopID).Set("point_question1 = ?", shop.PointQuestion1+newQ1).Set("point_question1 = ?", shop.PointQuestion2+newQ2).Set("point_question3 = ?", shop.PointQuestion3+newQ3).Set("shop_point = ?", shop.PointShop+shopPoint).Update()
-
-	if err != nil {
-		fmt.Println("Error after update point + in update reviwe")
-		fmt.Println(err)
-		json.NewEncoder(w).Encode("Error")
-		db.Close()
-		return
-	}
-
-	err = db.Model(shopReview).Where("id = ?", shopReview.ShopID).Select()
-
-	if err != nil {
-		fmt.Println("Error after select 2 shop review update reviwe")
-		fmt.Println(err)
-		json.NewEncoder(w).Encode("Error")
-		db.Close()
-		return
-	}
-
-	_, err = db.Model(&shop).Where("id = ?", shopReview.ShopID).Set("rating_question1 = ?", shop.PointQuestion1/shop.Reviewed).Set("rating_question2 = ?", shop.PointQuestion2/shop.Reviewed).Set("rating_question3 = ?", shop.PointQuestion3/shop.Reviewed).Set("rating_shop = ?", shop.PointShop/shop.Reviewed).Update()
-
-	if err != nil {
-		fmt.Println("Error after update rating question in update reviwe")
-		fmt.Println(err)
-		json.NewEncoder(w).Encode("Error")
-		db.Close()
-		return
-	}
-
-	err = db.Model(shopReview).Where("id = ?", reviewID).Select()
-
-	if err != nil {
-		fmt.Println("Error after select 22 shop review update reviwe")
-		fmt.Println(err)
-		json.NewEncoder(w).Encode("Error")
-		db.Close()
-		return
-	}
-
-	_, err = db.Model(shopReview).Where("id = ?", reviewID).Set("review = ?", review).Set("point_question1 = ?", newQ1).Set("point_question2 = ?", newQ2).Set("point_question3 = ?", newQ3).Set("shop_point = ?", shopPoint).Update()
-
-	if err != nil {
-		fmt.Println("Error after update point question 2 in update reviwe")
-		fmt.Println(err)
-		json.NewEncoder(w).Encode("Error")
-		db.Close()
-		return
-	}
-
-	json.NewEncoder(w).Encode("Success")
-	db.Close()
-	return
 
 }

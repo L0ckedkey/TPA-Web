@@ -26,11 +26,13 @@ type Product struct {
 type Brand struct {
 	ID   int    `json: "id" pg: "pk,bigserial"`
 	Name string `json: "name`
+	Sold int
 }
 
 type ProductCategory struct {
 	ID           int    `json: "id" pg: "pk,bigserial"`
 	CategoryName string `json: "category_name"`
+	Sold         int
 }
 
 type Shop struct {

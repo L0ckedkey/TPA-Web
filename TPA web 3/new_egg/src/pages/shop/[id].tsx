@@ -26,6 +26,9 @@ export default function ShopDetail(){
     const [page, setPage] = useState(1); // Current page
     const [totalPages, setTotalPages] = useState(1);
     const [totalProduct, setTotalProducts] = useState('')
+    const [status, setStatus] = useState('')
+
+    // var status = ''
 
     useEffect(() => {
         // Fetch the data for the specific product
@@ -39,6 +42,8 @@ export default function ShopDetail(){
         fetchProduct()
         if(id != undefined){
           axios.get('http://localhost:8080/getAShop/' + id).then(function (response) {
+            console.log(response.data.Status);
+            setStatus(response.data.Status)
             setNewShop(response.data)
             // console.log(response.data)
           })
@@ -106,11 +111,14 @@ export default function ShopDetail(){
 
     
     const getAllProducts = () => {
+        console.log("heho");
+        
         Axios.get("http://localhost:8080/getAllProductsFromShopPaginated",{
             params:{
                 page: page,
                 limit: PAGE_LIMIT,
-                shopID: id
+                shopID: id,
+                sort: sortBy
             }
         })
         .then(function (response) {
@@ -132,7 +140,8 @@ export default function ShopDetail(){
         Axios.get("http://localhost:8080/getAllProductsFromCategory",{
             params:{
                 category: filterBy,
-                sort: sortBy
+                sort: sortBy,
+               
             }
         })
         .then(function (response) {
@@ -153,7 +162,8 @@ export default function ShopDetail(){
                 category: filterBy,
                 page: page,
                 limit: PAGE_LIMIT,
-                sort: sortBy
+                sort: sortBy,
+                shopID: id,
             }
         })
         .then(function (response) {
@@ -191,7 +201,8 @@ export default function ShopDetail(){
             params:{
                 page: page,
                 limit: PAGE_LIMIT,
-                shopID: id
+                shopID: id,
+                sort: sortBy
             }
         })
         .then(function (response) {
@@ -233,7 +244,7 @@ export default function ShopDetail(){
     useEffect(() => {
         console.log(filterBy)
         console.log(sortBy)
-        if(filterBy === "" && sortBy === ""){
+        if(filterBy === ""){
             getAllProducts()
         }else{
             getAllProductFromCategory()
@@ -247,6 +258,7 @@ export default function ShopDetail(){
     return(
         <div>
             <Navbar/>
+                <h1>{status}</h1>
                 <div className={style["shop-header"]}>
                     <div className={style["shop-detail"]}>
                         <label className={style["shop-name"]}>{shop.Name}</label>
@@ -254,15 +266,15 @@ export default function ShopDetail(){
                     </div>
                     <div className={style["shop-statistic"]}>
                         <label className={style["shop-statistic-title"]}>Service Satisfaction</label>
-                        <label className={style["shop-statistic-detail"]}>{shop.ServiceSatisfaction}</label>
+                        <label className={style["shop-statistic-detail"]}>{shop.PointQuestion1 / shop.Reviewed}</label>
                     </div>
                     <div className={style["shop-statistic"]}>
                         <label className={style["shop-statistic-title"]}>Delivery Statistic</label>
-                        <label className={style["shop-statistic-detail"]}>{shop.DeliveryStatistic}</label>
+                        <label className={style["shop-statistic-detail"]}>{shop.PointQuestion2 / shop.Reviewed}</label>
                     </div>
                     <div className={style["shop-statistic"]}>
                         <label className={style["shop-statistic-title"]}>Product Accuracy</label>
-                        <label className={style["shop-statistic-detail"]}>{shop.ProductAccuracy}</label>
+                        <label className={style["shop-statistic-detail"]}>{shop.PointQuestion3 / shop.Reviewed}</label>
                     </div>
                     <div className={style["shop-statistic"]}>
                         <label className={style["shop-statistic-title"]}>Success Transaction</label>
@@ -326,4 +338,6 @@ export default function ShopDetail(){
             <Footer/>
         </div>
     )
+
+    
 }

@@ -68,18 +68,18 @@ export default function ForgotPassword(){
       const sendCode = () => {
         console.log(code)
         handleClick()
-        // console.log("clicked")
-        //   emailjs.send('service_qti1y0g', 'template_k8x1h22', {
-        //       sender_name: 'NewEgg Admin',
-        //       recipient_name: sessionStorage.getItem("email"),
-        //       recipient_email: sessionStorage.getItem("email"),
-        //       message: "Your Code is " + code,
-        //     }, "nlyqMaZDWWm5c0YtX")
-        //     .then((response) => {
-        //       console.log('SUCCESS!', response.status, response.text);
-        //     }, (error) => {
-        //       console.log('FAILED...', error);
-        //     });
+        console.log("clicked")
+          emailjs.send('service_qti1y0g', 'template_k8x1h22', {
+              sender_name: 'NewEgg Admin',
+              recipient_name: sessionStorage.getItem("email"),
+              recipient_email: sessionStorage.getItem("email"),
+              message: "Your Code is " + code,
+            }, "nlyqMaZDWWm5c0YtX")
+            .then((response) => {
+              console.log('SUCCESS!', response.status, response.text);
+            }, (error) => {
+              console.log('FAILED...', error);
+            });
       }
   
       const validateCode = () =>{

@@ -37,6 +37,19 @@ export default function Menu(){
     const goToMyReviews = () => {
         router.push("/user/review/myReview")
     }
+    
+    const goToSaveForLater = () => {
+        router.push("/saveForLater")
+    }
+
+    const goToChat = () => {
+        router.push("/chat")
+    }
+
+    const goToCustomerService = () => {
+        router.push("/chat/customerService")
+    }
+
 
     return(
         <div className={style["menu-container"]}>
@@ -44,6 +57,9 @@ export default function Menu(){
             <h3 onClick={() => goToOrderHistoryPage()}>Check Order History</h3>
             <h3 onClick={() => goToPublicWishlist()}>Public Wishlist</h3>
             <h3 onClick={() => goToMyReviews()}>My Reviews</h3>
+            <h3 onClick={() => goToSaveForLater()}>Save For Later Items</h3>
+            <h3 onClick={() => goToChat()}>Chat</h3>
+            <h3 onClick={() => goToCustomerService()}>Customer Service</h3>
         </div>
     )
 }

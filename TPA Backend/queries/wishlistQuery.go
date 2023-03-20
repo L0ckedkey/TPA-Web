@@ -100,6 +100,7 @@ func GetWishlistHeaderFiltered(w http.ResponseWriter, r *http.Request) {
 
 	db := databaseUtil.GetConnection()
 	filter := r.URL.Query().Get("filterBy")
+	accountID, err := strconv.Atoi(r.URL.Query().Get("accountID"))
 	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
 	page, err := strconv.Atoi(r.URL.Query().Get("page"))
 	offset := (page - 1) * limit
@@ -224,6 +225,21 @@ func GetWishlistHeaderFiltered(w http.ResponseWriter, r *http.Request) {
 			db.Close()
 			return
 		}
+	} else if filter == "Followed" {
+		var followed []model.FollowedWishlist
+
+		err := db.Model(&followed).Where("followed_wishlist.account_id = ?", accountID).Limit(limit).Offset(offset).Relation("WishlistHeader").Select()
+
+		if err != nil {
+			fmt.Println("error in select wishlist header Follower asc")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode("Error")
+			db.Close()
+			return
+		}
+		json.NewEncoder(w).Encode(followed)
+		db.Close()
+		return
 	}
 
 	json.NewEncoder(w).Encode(wishlists)
@@ -304,6 +320,7 @@ func UpdateWishlistHeader(w http.ResponseWriter, r *http.Request) {
 
 	db := databaseUtil.GetConnection()
 	wishlistHeaderID, error := strconv.Atoi(r.URL.Query().Get("wishlistHeaderID"))
+	accountID, error := strconv.Atoi(r.URL.Query().Get("accountID"))
 
 	if error != nil {
 		fmt.Println("error while parse int wishlistHeaderID")
@@ -329,40 +346,45 @@ func UpdateWishlistHeader(w http.ResponseWriter, r *http.Request) {
 	status := r.URL.Query().Get("status")
 	name := r.URL.Query().Get("name")
 
-	if description != "" {
-		_, err := db.Model(&wishlists).Where("id = ?", wishlistHeaderID).Set("description = ?", description).Update()
-		if err != nil {
-			fmt.Println("error while update description")
-			fmt.Println(err)
-			json.NewEncoder(w).Encode("Error")
-			db.Close()
-			return
+	if wishlists.AccountID == accountID {
+		if description != "" {
+			_, err := db.Model(&wishlists).Where("id = ?", wishlistHeaderID).Set("description = ?", description).Update()
+			if err != nil {
+				fmt.Println("error while update description")
+				fmt.Println(err)
+				json.NewEncoder(w).Encode("Error")
+				db.Close()
+				return
+			}
 		}
-	}
-	if status != "" {
-		_, err := db.Model(&wishlists).Where("id = ?", wishlistHeaderID).Set("status = ?", status).Update()
-		if err != nil {
-			fmt.Println("error while update status")
-			fmt.Println(err)
-			json.NewEncoder(w).Encode("Error")
-			db.Close()
-			return
+		if status != "" {
+			_, err := db.Model(&wishlists).Where("id = ?", wishlistHeaderID).Set("status = ?", status).Update()
+			if err != nil {
+				fmt.Println("error while update status")
+				fmt.Println(err)
+				json.NewEncoder(w).Encode("Error")
+				db.Close()
+				return
+			}
 		}
+
+		if name != "" {
+			_, err := db.Model(&wishlists).Where("id = ?", wishlistHeaderID).Set("name = ?", name).Update()
+
+			if err != nil {
+				fmt.Println("error while update description")
+				fmt.Println(err)
+				json.NewEncoder(w).Encode("Error")
+				db.Close()
+				return
+			}
+		}
+
+		json.NewEncoder(w).Encode("Success")
+	} else {
+		json.NewEncoder(w).Encode("not match credential")
 	}
 
-	if name != "" {
-		_, err := db.Model(&wishlists).Where("id = ?", wishlistHeaderID).Set("name = ?", name).Update()
-
-		if err != nil {
-			fmt.Println("error while update description")
-			fmt.Println(err)
-			json.NewEncoder(w).Encode("Error")
-			db.Close()
-			return
-		}
-	}
-
-	json.NewEncoder(w).Encode("Success")
 	db.Close()
 
 }
@@ -485,6 +507,7 @@ func DeleteWishlistDetail(w http.ResponseWriter, r *http.Request) {
 	db := databaseUtil.GetConnection()
 	wishlistHeaderID, err := strconv.Atoi(r.URL.Query().Get("wishlistHeaderID"))
 	productID, err := strconv.Atoi(r.URL.Query().Get("productID"))
+	accountID, err := strconv.Atoi(r.URL.Query().Get("accountID"))
 
 	if err != nil {
 		fmt.Println("error while parsing to int delete wishlist")
@@ -494,20 +517,37 @@ func DeleteWishlistDetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var wishlists []*model.WishlistDetail
+	var wishlistHeader model.WishlistHeader
 
-	_, err = db.Model(&wishlists).Where("wishlist_header_id = ?", wishlistHeaderID).Where("product_id = ?", productID).Delete()
+	err = db.Model(&wishlistHeader).Where("id = ?", wishlistHeaderID).Select()
 
 	if err != nil {
-		fmt.Println("error in delete wishlist detail")
+		fmt.Println("error in select wishlist header in delete product wishlist")
 		fmt.Println(err)
 		json.NewEncoder(w).Encode("Error")
 		db.Close()
 		return
 	}
 
-	json.NewEncoder(w).Encode("Success")
-	db.Close()
+	if wishlistHeader.AccountID == accountID {
+		var wishlists []*model.WishlistDetail
+
+		_, err = db.Model(&wishlists).Where("wishlist_header_id = ?", wishlistHeaderID).Where("product_id = ?", productID).Delete()
+
+		if err != nil {
+			fmt.Println("error in delete wishlist detail")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode("Error")
+			db.Close()
+			return
+		}
+
+		json.NewEncoder(w).Encode("Success")
+		db.Close()
+	} else {
+		json.NewEncoder(w).Encode("credential not match")
+		db.Close()
+	}
 
 }
 
@@ -522,6 +562,7 @@ func UpdateWishlistDetail(w http.ResponseWriter, r *http.Request) {
 	wishlistHeaderID, err := strconv.Atoi(r.URL.Query().Get("wishlistHeaderID"))
 	productID, err := strconv.Atoi(r.URL.Query().Get("productID"))
 	quantity, err := strconv.Atoi(r.URL.Query().Get("quantity"))
+	accountID, err := strconv.Atoi(r.URL.Query().Get("accountID"))
 
 	if err != nil {
 		fmt.Println("error while parsing to int update wishlist")
@@ -555,89 +596,94 @@ func UpdateWishlistDetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var totalPrice = 0
+	if wishlistHeader.AccountID == accountID {
+		var totalPrice = 0
 
-	for i := 0; i < len(wishlists); i++ {
-		var quan = wishlists[i].Quantity
-		var price = wishlists[i].Product.ProductPrice
+		for i := 0; i < len(wishlists); i++ {
+			var quan = wishlists[i].Quantity
+			var price = wishlists[i].Product.ProductPrice
 
-		totalPrice = totalPrice + (quan * price)
-	}
-	fmt.Println("total price")
-	fmt.Println(totalPrice)
-	fmt.Println(wishlistHeader.Price)
-	var newPriceInput = wishlistHeader.Price - totalPrice
-	_, err = db.Model(&wishlistHeader).Where("id = ?", wishlistHeaderID).Set("price = ?", newPriceInput).Update()
+			totalPrice = totalPrice + (quan * price)
+		}
+		fmt.Println("total price")
+		fmt.Println(totalPrice)
+		fmt.Println(wishlistHeader.Price)
+		var newPriceInput = wishlistHeader.Price - totalPrice
+		_, err = db.Model(&wishlistHeader).Where("id = ?", wishlistHeaderID).Set("price = ?", newPriceInput).Update()
 
-	if err != nil {
-		fmt.Println("error in neutralizing price header")
-		fmt.Println(err)
-		json.NewEncoder(w).Encode("Error")
+		if err != nil {
+			fmt.Println("error in neutralizing price header")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode("Error")
+			db.Close()
+			return
+		}
+
+		_, err = db.Model(&wishlists).Where("wishlist_header_id = ?", wishlistHeaderID).Where("product_id = ?", productID).Delete()
+
+		if err != nil {
+			fmt.Println("error in delete wishlist header")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode("Error")
+			db.Close()
+			return
+		}
+
+		wishlistInsert := model.WishlistDetail{
+			ProductID:        productID,
+			WishlistHeaderID: wishlistHeaderID,
+			Quantity:         quantity,
+		}
+
+		_, err = db.Model(&wishlistInsert).Insert()
+		if err != nil {
+			fmt.Println("error in insert wishlist detail")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode("Error")
+			db.Close()
+			return
+		}
+
+		var product model.Product
+
+		err = db.Model(&product).Where("id = ?", productID).Select()
+
+		if err != nil {
+			fmt.Println("error in select product")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode("Error")
+			db.Close()
+			return
+		}
+
+		var newPrice = quantity * product.ProductPrice
+
+		err = db.Model(&wishlistHeader).Where("id = ?", wishlistHeaderID).Select()
+
+		if err != nil {
+			fmt.Println("error in select price header again")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode("Error")
+			db.Close()
+			return
+		}
+
+		_, err = db.Model(&wishlistHeader).Where("id = ?", wishlistHeaderID).Set("price = ?", wishlistHeader.Price+newPrice).Update()
+
+		if err != nil {
+			fmt.Println("error in update price header")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode("Error")
+			db.Close()
+			return
+		}
+
+		json.NewEncoder(w).Encode("Success")
 		db.Close()
-		return
-	}
-
-	_, err = db.Model(&wishlists).Where("wishlist_header_id = ?", wishlistHeaderID).Where("product_id = ?", productID).Delete()
-
-	if err != nil {
-		fmt.Println("error in delete wishlist header")
-		fmt.Println(err)
-		json.NewEncoder(w).Encode("Error")
+	} else {
+		json.NewEncoder(w).Encode("Credential not match")
 		db.Close()
-		return
 	}
-
-	wishlistInsert := model.WishlistDetail{
-		ProductID:        productID,
-		WishlistHeaderID: wishlistHeaderID,
-		Quantity:         quantity,
-	}
-
-	_, err = db.Model(&wishlistInsert).Insert()
-	if err != nil {
-		fmt.Println("error in insert wishlist detail")
-		fmt.Println(err)
-		json.NewEncoder(w).Encode("Error")
-		db.Close()
-		return
-	}
-
-	var product model.Product
-
-	err = db.Model(&product).Where("id = ?", productID).Select()
-
-	if err != nil {
-		fmt.Println("error in select product")
-		fmt.Println(err)
-		json.NewEncoder(w).Encode("Error")
-		db.Close()
-		return
-	}
-
-	var newPrice = quantity * product.ProductPrice
-
-	err = db.Model(&wishlistHeader).Where("id = ?", wishlistHeaderID).Select()
-
-	if err != nil {
-		fmt.Println("error in select price header again")
-		fmt.Println(err)
-		json.NewEncoder(w).Encode("Error")
-		db.Close()
-		return
-	}
-
-	_, err = db.Model(&wishlistHeader).Where("id = ?", wishlistHeaderID).Set("price = ?", wishlistHeader.Price+newPrice).Update()
-
-	if err != nil {
-		fmt.Println("error in update price header")
-		fmt.Println(err)
-		json.NewEncoder(w).Encode("Error")
-		db.Close()
-		return
-	}
-
-	json.NewEncoder(w).Encode("Success")
-	db.Close()
 
 }
 

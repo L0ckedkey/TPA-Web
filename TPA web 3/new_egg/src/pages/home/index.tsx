@@ -23,6 +23,8 @@ import List from '@/components/infiniteScroll';
 const link = "http://localhost:8080/getAllProducts"
 const getLink = 'http://localhost:8080/getBannerFromAdmin';
 const getBestShopsLink = 'http://localhost:8080/getBestShop';
+const getBestBrandLink = 'http://localhost:8080/getBestBrand';
+const getBestProductCategoryLink = 'http://localhost:8080/getBestProductCategory';
 
 export default function Home(){
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -34,13 +36,47 @@ export default function Home(){
     const [images, setImages] = useState([])
     const [isLoading, setLoading] = useState(true)
     const [bestShop, setBestShop] = useState([])
-
+    const [brands, setBrands] = useState([])
+    const [productCategories, setProductCategory] = useState([])
 
     useEffect(() => {
         Axios.get(getLink).then(function (response) {
             console.log(response.data);
             setImages(response.data);
             setLoading(false)
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+
+        Axios.get(getBestShopsLink)
+        .then(function (response) {
+            console.log(response.data);
+            setBestShop(response.data)
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+
+        Axios.get(getBestBrandLink)
+        .then(function (response) {
+            console.log(response.data);
+            if (response.data != "Error"){
+                setBrands(response.data);
+            }
+            
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+
+        Axios.get(getBestProductCategoryLink)
+        .then(function (response) {
+            console.log(response.data);
+            if (response.data != "Error"){
+                setProductCategory(response.data);
+            }
+            
         })
         .catch(function (error) {
             console.log(error);
@@ -122,6 +158,7 @@ export default function Home(){
         <div> 
             <Navbar onSearchFilter={searchFilter}/>
            
+           
             <div className={style["carousel"]}>
                 <div className={style["carousel-prev"]} onClick={() => handlePrevClick()}>
                     &#10094;
@@ -151,6 +188,22 @@ export default function Home(){
                 }):null
             }
             </div>
+            <div>
+                {
+                    brands ? brands.map((brand:any) => {
+                       return( <h3>{brand.Name}</h3>)
+                    }): null
+                }
+            </div>
+
+            <div>
+                {
+                    productCategories ? productCategories.map((brand:any) => {
+                       return( <h3>{brand.CategoryName}</h3>)
+                    }): null
+                }
+            </div>
+
             <List orderBy={filterBy} search={search} products={products}/>
             {
                 role === "Seller" ? <button className={style["add-product-button"]} onClick={() => goToShop()}>Go To Shop</button> : role ==="Admin" ? <button onClick={() => goToAdmin()} className={style["add-product-button"]}>Go To Admin Page</button>: console.log()

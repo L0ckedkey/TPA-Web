@@ -170,6 +170,7 @@ export default function main(){
     return(
         <div>
           <Navbar/>
+          <h1>{shop.Status}</h1>
           <div className={style["product-detail"]}>
             <img src={product.Url} alt='eror' className={style["product-image-detail"]}></img>
             <div>

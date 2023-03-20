@@ -3,6 +3,7 @@ package main
 import (
 	databaseUtil "backend/database"
 	query "backend/queries"
+	"backend/websocket"
 	"log"
 	"net/http"
 
@@ -12,6 +13,7 @@ import (
 const defaultPort = "8080"
 
 func main() {
+
 	db := databaseUtil.GetConnection()
 	databaseUtil.CreateSchema(db)
 
@@ -36,6 +38,9 @@ func main() {
 	r.HandleFunc("/getProductsByProductDistinct", query.GetAllProductsBrandDistinct).Methods("GET")
 	r.HandleFunc("/getSimiliarProduct", query.GetSimiliarProduct).Methods("GET")
 	r.HandleFunc("/getSimiliarProductShop", query.GetSimiliarProductShop).Methods("GET")
+	r.HandleFunc("/getShopID", query.GetShopID).Methods("GET")
+	r.HandleFunc("/getBestProductCategory", query.GetBestProductCategory).Methods("GET")
+	r.HandleFunc("/getBestBrand", query.GetBestBrand).Methods("GET")
 
 	r.HandleFunc("/getAShop/{id}", query.GetAShop).Methods("GET")
 	r.HandleFunc("/GetAllProductsFromShop/{id}", query.GetAllProductsFromShop).Methods("GET")
@@ -52,6 +57,8 @@ func main() {
 	r.HandleFunc("/addShop", query.AddShop).Methods("GET")
 	r.HandleFunc("/getBestShop", query.GetBestShop).Methods("GET")
 	r.HandleFunc("/updateShop", query.UpdateShop).Methods("GET")
+	r.HandleFunc("/getAllShops", query.GetAllShops).Methods("GET")
+	r.HandleFunc("/getAllShopsPaginated", query.GetAllShopsPaginated).Methods("GET")
 
 	r.HandleFunc("/changePassword", query.ChangePassword).Methods("GET")
 	r.HandleFunc("/getCarts", query.GetCarts).Methods("GET")
@@ -96,9 +103,10 @@ func main() {
 	r.HandleFunc("/updateBannerFromAdmin", query.UpdateBannerFromAdmin).Methods("GET")
 	r.HandleFunc("/deleteBannerFromAdmin", query.DeleteBannerFromAdmin).Methods("GET")
 
-	r.HandleFunc("/getAllMessageIDFromAccounts", query.GetAllMessageIDFromAccount).Methods("GET")
+	r.HandleFunc("/getAllMessagesHeader", query.GetAllMessagesHeader).Methods("GET")
 	r.HandleFunc("/addMessageID", query.AddMessageID).Methods("GET")
 	r.HandleFunc("/checkMessageIDFromAccount", query.CheckMessageIDFromAccount).Methods("GET")
+	r.HandleFunc("/getAllMessagesHeaderFromShop", query.GetAllMessagesHeaderFromShop).Methods("GET")
 
 	r.HandleFunc("/cancelOrder", query.CancelOrder).Methods("GET")
 	r.HandleFunc("/addOrder", query.AddOrder).Methods("GET")
@@ -109,6 +117,7 @@ func main() {
 	r.HandleFunc("/changeOrderStatus", query.ChangeOrderStatus).Methods("GET")
 	r.HandleFunc("/getDoneOrderFromUserDistinctShop", query.GetDoneOrderFromUserDistinctShop).Methods("GET")
 	r.HandleFunc("/orderAgain", query.OrderAgain).Methods("GET")
+	r.HandleFunc("/getOrderHeaderForShop", query.GetOrderHeaderForShop).Methods("GET")
 
 	r.HandleFunc("/addAddress", query.AddAddress).Methods("GET")
 	r.HandleFunc("/getAccountAddress", query.GetAccountAddress).Methods("GET")
@@ -129,6 +138,21 @@ func main() {
 	r.HandleFunc("/deleteShopReview", query.DeleteShopReview).Methods("GET")
 	r.HandleFunc("/deleteProductReview", query.DeleteProductReview).Methods("GET")
 	r.HandleFunc("/updateShopReview", query.UpdateShopReview).Methods("GET")
+
+	r.HandleFunc("/getMessage", websocket.GetMessage).Methods("GET")
+
+	r.HandleFunc("/addMessageHeaderCustomerService", websocket.AddMessageHeaderCustomerService).Methods("GET")
+	r.HandleFunc("/getMessageCustomerService", websocket.GetMessageCustomerService).Methods("GET")
+	r.HandleFunc("/getMessageHeaderCustomerService", websocket.GetMessageHeaderCustomerService).Methods("GET")
+	r.HandleFunc("/getMessageHeaderCustomerServiceCS", websocket.GetMessageHeaderCustomerServiceCS).Methods("GET")
+	r.HandleFunc("/changeHeaderStatus", websocket.ChangeHeaderStatus).Methods("GET")
+	r.HandleFunc("/addCustomerReview", query.AddCustomerReview).Methods("GET")
+
+	r.HandleFunc("/ws", websocket.HandleConnections)
+	r.HandleFunc("/ws2", websocket.HandleConnectionsCustomerService)
+
+	r.HandleFunc("/addSaveForLater", query.AddSaveForLater)
+	r.HandleFunc("/getSaveForLater", query.GetSaveForLater)
 
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

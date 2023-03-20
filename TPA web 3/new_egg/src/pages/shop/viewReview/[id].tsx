@@ -74,9 +74,12 @@ export default function ViewReview(){
                     <div>
                         <h3>Shop Rating : {shop.RatingShop}</h3>
                         <h3>Reviewed : {shop.Reviewed}</h3>
-                        <h3>Rating Question 1 : {shop.RatingQuestion1}</h3>
-                        <h3>Rating Question 2 : {shop.RatingQuestion2}</h3>
-                        <h3>Rating Question 3 : {shop.RatingQuestion3}</h3>
+                        <h3>Rating Question 1 : {shop.PointQuestion1 / shop.Reviewed}</h3>
+                        <h3>Rating Question 2 : {shop.PointQuestion2 / shop.Reviewed}</h3>
+                        <h3>Rating Question 3 : {shop.PointQuestion3 / shop.Reviewed}</h3>
+                        <h3>Statistic Question 1 : {shop.PointQuestion1} / {shop.Reviewed}</h3>
+                        <h3>Statistic Question 2 : {shop.PointQuestion2} / {shop.Reviewed}</h3>
+                        <h3>Statistic Question 3 : {shop.PointQuestion3} / {shop.Reviewed}</h3>
                     </div>:null
                 }
                 <input onChange={(e) => setSearch(e.target.value)}></input>
@@ -84,6 +87,7 @@ export default function ViewReview(){
                     <option value={""}></option>
                     <option value={"Time ASC"}>Oldest to Newest</option>
                     <option value={"Time DESC"}>Newest to Oldest</option>
+                    <option value={"Week Ago"}>Week Ago</option>
                 </select>
                 {
                     reviews ? reviews.map((review:any) => {

@@ -24,6 +24,7 @@ require (
 
 require (
 	github.com/go-pg/pg/v10 v10.11.0
+	github.com/gorilla/websocket v1.5.0
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/onsi/ginkgo v1.16.5 // indirect
 	github.com/onsi/gomega v1.26.0 // indirect

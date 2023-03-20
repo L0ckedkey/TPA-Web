@@ -26,8 +26,18 @@ function EditWishlist(props:any){
     const [status, setStatus] = useState('')
     const [name, setName] = useState('')
     const [description, setDescription] = useState('');
-    
+    const [accountID, setAccountID] = useState('')
 
+
+    useEffect(() => {
+
+        const getCurName = async () => {
+            var name = await getUserID()
+            setAccountID(name)
+        }
+        
+        getCurName()      
+    }, [])
 
     const updateWishlist = () => {
         Axios.get(link,{
@@ -35,7 +45,8 @@ function EditWishlist(props:any){
                 name: name,
                 description: description,
                 status: status,
-                wishlistHeaderID: props.details.ID
+                wishlistHeaderID: props.details.ID,
+                accountID: accountID
             }
         }).then(function (response) {
             // console.log(response.data)

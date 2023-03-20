@@ -20,15 +20,6 @@ export function Address(props:any){
     const [inputLocation, setInputLocation] = useState('')
     const [userID, setUserID] = useState('')
 
-   
-    const handleInputChange = (event:any) => {
-        console.log(props)
-        setAddress(event);
-        props.onChange(event);
-        // props.onUpdateAddress(event);
-    }
-
-
     useEffect(() => {
 
         const getCurName = async () => {
@@ -38,6 +29,16 @@ export function Address(props:any){
         
         getCurName()      
     }, [])
+   
+    const handleInputChange = (event:any) => {
+        console.log(props)
+        setAddress(event);
+        props.onChange(event);
+        // props.onUpdateAddress(event);
+    }
+
+
+  
 
     useEffect(() => {
         if(userID != ""){

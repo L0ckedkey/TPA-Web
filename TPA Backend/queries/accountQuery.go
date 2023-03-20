@@ -619,3 +619,42 @@ func ChangePasswordOnly(w http.ResponseWriter, r *http.Request) {
 	db.Close()
 	// fmt.Println("hai")
 }
+
+func GetShopID(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers:", "Origin, Content-Type, X-Auth-Token, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+
+	var db = databaseUtil.GetConnection()
+	accountID, error := strconv.Atoi(r.URL.Query().Get("accountID"))
+
+	if error != nil {
+		fmt.Println(error)
+		json.NewEncoder(w).Encode("error")
+		return
+	}
+
+	var account = new(model.Account)
+	var err = db.Model(account).Where("id = ?", accountID).Select()
+
+	if err != nil {
+		fmt.Println(err)
+		json.NewEncoder(w).Encode("error")
+		return
+	}
+
+	var shop model.Shop
+	err = db.Model(&shop).Where("email = ?", account.Email).Select()
+
+	if err != nil {
+		fmt.Println(err)
+		json.NewEncoder(w).Encode("error")
+		return
+	}
+
+	json.NewEncoder(w).Encode(shop.ID)
+
+	db.Close()
+}

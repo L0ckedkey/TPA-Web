@@ -94,6 +94,8 @@ export default function OrderHistory(){
                 <option value={""}></option>
                     <option value={"time DESC"}>Time Latest to Newest</option>
                     <option value={"time ASC"}>Time Newest to Latest</option>
+                    <option value={"cancel"}>Cancel</option>
+                    <option value={"open"}>Open</option>
                 </select>
                 {
                     orderHeaders ? orderHeaders.map((orderHeader:any) => {

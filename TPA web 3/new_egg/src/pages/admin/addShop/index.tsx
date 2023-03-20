@@ -5,8 +5,13 @@ import { useEffect, useState } from "react";
 import style from '../../../styles/admins.module.css'
 import { useRouter } from 'next/router';
 import middleware from "@/utiil/token";
+import ViewShop from "./viewShop";
+import emailjs from 'emailjs-com';
 
 export default function AddShop(){
+
+    const getAllShops = "http://localhost:8080/getAllShops"
+    const getAllShopsPaginated = "http://localhost:8080/getAllShopsPaginated"
 
     const router = useRouter()
     const [password, setPassword] = useState('')
@@ -22,6 +27,12 @@ export default function AddShop(){
     const [phoneNumberError, setPhoneNumberError] = useState(false)
     const [firstNameError, setFirstNameError] = useState(false)
     const [lastNameError, setLastNameError] = useState(false)
+
+    const [filterBy, setFilterBy] = useState('')
+    const [shops, setShops] = useState([])
+    const [pageLimit, setPageLimit] = useState(5)
+    const [page, setPage] = useState(1)
+    const [totalPages, setTotalPages] = useState(0)
 
     const [vouchers, setVouchers] = useState([])
 
@@ -64,6 +75,23 @@ export default function AddShop(){
     })
 
 
+    const blastEmail = () => {
+        
+            
+            const data = {
+                from_name: "NewEgg Promotion Team",
+                to_name: firstName + " " + lastName,
+                message: "Your Shop hase been created",
+                to_email: email
+            }
+    
+            emailjs.send("service_qti1y0g","template_r2nq9dp",data,"nlyqMaZDWWm5c0YtX").then((result:any) => {
+                console.log(result.text);
+              }, (error:any) => {
+                console.log(error.text);
+              });
+        }
+
     const addShop = () => {
         if(!firstNameError && !descriptionError && !emailError && !phoneNumberError && !lastNameError && !passwordError){
             console.log(description)
@@ -82,7 +110,9 @@ export default function AddShop(){
                 }
             }).then(function (response) {
                 console.log(response.data);
-                // router.push("/admin/home")
+                if(response.data == "Success"){
+                    blastEmail()
+                }
               })
               .catch(function (error) {
                 console.log(error);
@@ -98,6 +128,65 @@ export default function AddShop(){
         middleware('admin/adShop','Admin', router)
     })
 
+    const nextPage = () => {
+        console.log(totalPages)
+        if(page + 1 > totalPages){
+            setPage(totalPages)
+        }else{
+            var pageNow = page+1
+            console.log(pageNow)
+            setPage(pageNow)
+        }
+       
+    }
+
+    const prevPage = () => {
+        if(page - 1 <= 0){
+            setPage(1)
+        }else{
+            var pageNow = page-1
+            console.log(pageNow)
+            setPage(pageNow)
+        }
+    }
+
+    useEffect(() => {
+        Axios.get(getAllShops,{
+            params:{
+                filterBy:filterBy
+            }
+        }).then(function (response) {
+            var jsonArray = response.data
+            setTotalPages(Math.ceil(jsonArray.length / pageLimit));
+        })
+        .catch(function (error) {
+        //   console.log(error);
+        })
+        .then(function () {
+        // always executed
+        });  
+    }, [page,filterBy])
+
+    useEffect(() => {
+        Axios.get(getAllShopsPaginated,{
+            params:{
+                limit: pageLimit,
+                page: page,
+                filterBy:filterBy
+            }
+        }).
+        then(function (response) {
+            setShops(response.data)
+        })
+        .catch(function (error) {
+        //   console.log(error);
+        })
+        .then(function () {
+        // always executed
+        });  
+    }, [page,filterBy])
+
+    
     return (
         <div>
             <Navbar/>
@@ -147,6 +236,14 @@ export default function AddShop(){
                 </div>
                 <button className={style["add-promo-button"]} onClick={() => addShop()}>Add Shop</button>            
             </div>
+            <select value={filterBy} onChange={(event) =>setFilterBy(event.target.value)}>
+                    <option value={""}></option>
+                    <option value={"Banned"}>Banned</option>
+                    <option value={"Active"}>Active</option>
+            </select>
+            <ViewShop details={shops}/>
+            <button onClick={() => prevPage()}>prev</button>
+            <button onClick={() => nextPage()}>next</button>
             <Footer/>
         </div>
     )

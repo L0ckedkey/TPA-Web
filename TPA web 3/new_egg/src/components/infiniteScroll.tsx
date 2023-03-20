@@ -33,29 +33,11 @@ export default function List(props:any) {
     }); 
   }
 
-  const sortPriceASC = () =>{
-    Axios.get(linkFilterPrice,{
-        params:{
-            order:"ASC",
-            name: props.search
-        }
-    })
-    .then(function (response) {
-        setProducts(response.data)
-        // console.log(response.data)
-    })
-    .catch(function (error) {
-      // console.log(error);
-    })
-    .then(function () {
-      // always executed
-    }); 
-}
 
-const sortPriceDESC = () =>{
+const sortProduct = () =>{
     Axios.get(linkFilterPrice,{
         params:{
-            order:"DESC",
+            order:props.orderBy,
             name: props.search
         }
     })
@@ -105,12 +87,9 @@ const getName = () =>{
     if(props.orderBy === "" && props.search === ""){
       console.log(1)
       fetchItems()
-    }else if(props.orderBy === "priceASC"){
+    }else if(props.orderBy !== ""){
       console.log(2)
-      sortPriceASC()
-    }else if(props.orderBy === "priceDESC" ){
-      console.log(3)
-        sortPriceDESC();
+      sortProduct()
     }else if(props.search !== ""){
       console.log(4)
       getName();
@@ -178,34 +157,15 @@ export function ListForBrand(props:any) {
     }); 
   }
 
-  const sortPriceASC = () =>{
+  const sortProduct = () =>{
     Axios.get(linkFilterPrice,{
         params:{
-            order:"ASC",
-            name: props.search
+          order:props.orderBy,
+          name: props.search
         }
     })
     .then(function (response) {
         setProducts(response.data)
-        // console.log(response.data)
-    })
-    .catch(function (error) {
-      // console.log(error);
-    })
-    .then(function () {
-      // always executed
-    }); 
-}
-
-const sortPriceDESC = () =>{
-    Axios.get(linkFilterPrice,{
-        params:{
-            order:"DESC",
-            name: props.search
-        }
-    })
-    .then(function (response) {
-      setProducts(response.data)
         // console.log(response.data)
     })
     .catch(function (error) {
@@ -234,22 +194,19 @@ const getName = () =>{
   }); 
 }
 
-  useEffect(() => {
-    // console.log(search)
-    if(props.orderBy === "" && props.search === ""){
-      // console.log(1)
-      fetchItems()
-    }else if(props.orderBy === "priceASC"){
-      // console.log(2)
-      sortPriceASC()
-    }else if(props.orderBy === "priceDESC" ){
-      // console.log(3)
-        sortPriceDESC();
-    }else if(props.search !== ""){
-      // console.log(4)
-      getName();
-    }
-  }, [props.orderBy, props.search])
+useEffect(() => {
+  // console.log(search)
+  if(props.orderBy === "" && props.search === ""){
+    console.log(1)
+    fetchItems()
+  }else if(props.orderBy !== ""){
+    console.log(2)
+    sortProduct()
+  }else if(props.search !== ""){
+    console.log(4)
+    getName();
+  }
+}, [props.orderBy, props.search])
 
 
   return (

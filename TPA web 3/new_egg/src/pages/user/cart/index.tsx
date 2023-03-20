@@ -99,7 +99,11 @@ export default function GetCart(props:any){
                 {
                     Array.isArray(carts) && carts.length > 0 ? carts.map((cart:any) => {
                         return(
-                            <Card key={cart.ID} details={cart}></Card>
+                            <div>
+                                <Card key={cart.ID} details={cart}></Card>
+                                
+                            </div>
+                            
                         )
                     }):console.log("")
                 }

@@ -1,5 +1,6 @@
 import Footer from "@/components/footer"
 import Navbar from "@/components/navbar"
+import { getUserID } from "@/utiil/token";
 import Axios from "axios";
 import { useRouter } from "next/router"
 import { useState, useEffect } from "react";
@@ -76,12 +77,24 @@ function DetailCard(props:any){
     const link = "http://localhost:8080/deleteWishlistDetail"
     const updateLink = "http://localhost:8080/updateWishlistDetail"
     const [quantity, setQuantity] = useState(0)
+    const [accountID, setAccountID] = useState('')
     
+    useEffect(() => {
+
+        const getCurName = async () => {
+            var name = await getUserID()
+            setAccountID(name)
+        }
+        
+        getCurName()      
+    }, [])
+
     const deleteProduct = () => {
         Axios.get(link,{
             params:{
                 wishlistHeaderID: prop.id,
-                productID: props.Product.ID
+                productID: props.Product.ID,
+                accountID: accountID
             }
         }).then(function (response) {
             console.log(response.data)
@@ -112,7 +125,8 @@ function DetailCard(props:any){
             params:{
                 wishlistHeaderID: prop.id,
                 productID: props.Product.ID,
-                quantity: quantity
+                quantity: quantity,
+                accountID: accountID
             }
         }).then(function (response) {
             console.log(response.data)

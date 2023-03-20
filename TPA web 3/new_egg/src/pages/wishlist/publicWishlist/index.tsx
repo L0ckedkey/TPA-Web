@@ -1,6 +1,7 @@
 import Footer from "@/components/footer";
 import Navbar from "@/components/navbar";
 import { PublicCard } from "@/components/wishlistCard";
+import { getUserID } from "@/utiil/token";
 import Axios from "axios";
 import { useEffect, useState } from "react"
 
@@ -14,7 +15,18 @@ export default function PublicWishlist(){
     const [pageLimit, setPageLimit] = useState(15)
     const [page, setPage] = useState(1)
     const [totalPages, setTotalPages] = useState(0)
+    const [accountID, setAccountID] = useState('')
 
+
+    useEffect(() => {
+
+        const getCurName = async () => {
+            var name = await getUserID()
+            setAccountID(name)
+        }
+        
+        getCurName()      
+    }, [])
 
     useEffect(() => {
         Axios.get(getCountLink)
@@ -37,11 +49,13 @@ export default function PublicWishlist(){
             params:{
                 filterBy: filterBy,
                 limit: pageLimit,
-                page: page
+                page: page,
+                accountID: accountID
             }
         })
         .then(function (response) {
-            console.log(response.data);
+            console.log(response.data.WishlistHeader);
+
             setWishlistHeader(response.data)
         })
         .catch(function (error) {
@@ -53,11 +67,11 @@ export default function PublicWishlist(){
     }, [filterBy, page, totalPages])
 
     useEffect(() => {
-        console.log(wishlistHeader.length);
-        console.log(filterBy);
-        console.log(pageLimit);
-        console.log(page);
-        console.log(totalPages);
+        // console.log(wishlistHeader.length);
+        // console.log(filterBy);
+        // console.log(pageLimit);
+        // console.log(page);
+        // console.log(totalPages);
     })
 
 
@@ -104,11 +118,20 @@ export default function PublicWishlist(){
                     <option value={"Review ASC"}>Highest to Lowest Review</option>
                     <option value={"Follower DESC"}>Lowest to Highest Follower</option>
                     <option value={"Follower ASC"}>Highest to Lowest Follower</option>
+                    <option value={"Followed"}>Followed</option>
                 </select>
             {
                 wishlistHeader ?
-                wishlistHeader.map((wishlistHeaderSingle) => {
-                    return(<PublicCard details={wishlistHeaderSingle}/>)
+                wishlistHeader.map((wishlistHeaderSingle:any) => {
+                    
+                    
+                    if(filterBy == "Followed" && wishlistHeaderSingle.WishlistHeader != undefined){
+                        console.log(wishlistHeaderSingle);
+                        return(<PublicCard details={wishlistHeaderSingle.WishlistHeader}/>)
+                    }else{
+                        return(<PublicCard details={wishlistHeaderSingle}/>)
+                    }
+                    
                 }):null
             }
             <button onClick={() => prevPage()}>prev</button>

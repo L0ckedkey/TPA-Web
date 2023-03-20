@@ -195,6 +195,67 @@ func GetOrderFromUserDistinctShop(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func GetOrderHeaderForShop(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers:", "Origin, Content-Type, X-Auth-Token, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+
+	db := databaseUtil.GetConnection()
+	accountID, err := strconv.Atoi(r.URL.Query().Get("accountID"))
+
+	if err != nil {
+		fmt.Println(err)
+		json.NewEncoder(w).Encode("error")
+		db.Close()
+		return
+	}
+
+	var account model.Account
+
+	err = db.Model(&account).Where("id = ?", accountID).Select()
+
+	if err != nil {
+		fmt.Println("select acc")
+		fmt.Println(err)
+		json.NewEncoder(w).Encode("error")
+		db.Close()
+		return
+	}
+
+	var shop model.Shop
+	fmt.Println(account.Email)
+	err = db.Model(&shop).Where("email = ?", account.Email).Select()
+
+	if err != nil {
+		fmt.Println("select shop")
+		fmt.Println(err)
+		json.NewEncoder(w).Encode("error")
+		db.Close()
+		return
+	}
+
+	var shopID = shop.ID
+
+	var orderHeader []*model.OrderHeader
+
+	err = db.Model(&orderHeader).Where("shop_id = ?", shopID).Where("order_header.status != ?", "Done").Relation("Address").Relation("Account").Relation("Shop").Select()
+
+	if err != nil {
+		fmt.Println("select order header")
+		fmt.Println(err)
+		json.NewEncoder(w).Encode("error")
+		db.Close()
+		return
+	}
+
+	json.NewEncoder(w).Encode(orderHeader)
+
+	db.Close()
+
+}
+
 func GetOrderProducts(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -290,6 +351,58 @@ func ChangeOrderStatus(w http.ResponseWriter, r *http.Request) {
 
 			err = db.Model(&product).Where("id = ?", orderDetail.ProductID).Select()
 			_, err = db.Model(&product).Where("id = ?", orderDetail.ProductID).Set("sold = ?", product.Sold+orderDetail.Quantity).Update()
+
+			err = db.Model(&product).Where("product.id = ?", orderDetail.ProductID).Relation("ProductCategory").Relation("Brand").Select()
+			if err != nil {
+
+				fmt.Println(err)
+				json.NewEncoder(w).Encode("error")
+				db.Close()
+				return
+			}
+			var soldBrand = product.Brand.Sold + orderDetail.Quantity
+			var soldProductCategory = product.ProductCategory.Sold + orderDetail.Quantity
+
+			fmt.Println("HUIASDASODNKASDNASDN")
+			fmt.Println(soldBrand)
+			fmt.Println(product.BrandID)
+			var brand = model.Brand{}
+
+			err = db.Model(&brand).Where("id = ?", product.BrandID).Select()
+			if err != nil {
+
+				fmt.Println(err)
+				json.NewEncoder(w).Encode("error")
+				db.Close()
+				return
+			}
+			_, err = db.Model(&brand).Where("id = ?", product.BrandID).Set("sold = ?", soldBrand).Update()
+
+			if err != nil {
+
+				fmt.Println(err)
+				json.NewEncoder(w).Encode("error")
+				db.Close()
+				return
+			}
+			var produtCategory = model.ProductCategory{}
+
+			err = db.Model(&produtCategory).Where("id = ?", product.ProductCategoryID).Select()
+			if err != nil {
+
+				fmt.Println(err)
+				json.NewEncoder(w).Encode("error")
+				db.Close()
+				return
+			}
+			_, err = db.Model(&produtCategory).Where("id = ?", product.ProductCategoryID).Set("sold = ?", soldProductCategory).Update()
+			if err != nil {
+
+				fmt.Println(err)
+				json.NewEncoder(w).Encode("error")
+				db.Close()
+				return
+			}
 		}
 
 		fmt.Println("this")
@@ -346,6 +459,24 @@ func GetDoneOrderFromUserDistinctShop(w http.ResponseWriter, r *http.Request) {
 		}
 	} else if filterBy == "time DESC" {
 		err = db.Model(&orderHeader).Order("date_ordered DESC").Where("order_header.status = ? OR order_header.status = ?", "Done", "Cancelled").Where("order_header.account_id = ?", accountID).Relation("Address").Relation("Account").Relation("Shop").Select()
+
+		if err != nil {
+			fmt.Println(err)
+			json.NewEncoder(w).Encode("error")
+			db.Close()
+			return
+		}
+	} else if filterBy == "cancel" {
+		err = db.Model(&orderHeader).Where("order_header.status = ?", "Cancelled").Where("order_header.account_id = ?", accountID).Relation("Address").Relation("Account").Relation("Shop").Select()
+
+		if err != nil {
+			fmt.Println(err)
+			json.NewEncoder(w).Encode("error")
+			db.Close()
+			return
+		}
+	} else if filterBy == "open" {
+		err = db.Model(&orderHeader).Where("order_header.status != ?", "Cancelled").Where("order_header.account_id = ?", accountID).Relation("Address").Relation("Account").Relation("Shop").Select()
 
 		if err != nil {
 			fmt.Println(err)

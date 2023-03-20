@@ -122,7 +122,7 @@ func GetOrderDetailShop(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(error)
 		}
 	} else {
-		var error = db.Model(&orderDetail).Where("shop_id = ?", shopID).Where("order_header.status != ?", "Cancel").Relation("Shop").Relation("Account").Select()
+		var error = db.Model(&orderDetail).Where("shop_id = ?", shopID).Where("order_header.status != ?", "Cancelled").Relation("Shop").Relation("Account").Select()
 		if error != nil {
 			fmt.Println(error)
 		}

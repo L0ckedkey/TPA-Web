@@ -12,6 +12,107 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+func GetAllShops(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers:", "Origin, Content-Type, X-Auth-Token, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+
+	var shops []model.Shop
+	db := databaseUtil.GetConnection()
+	filterBy := r.URL.Query().Get("filterBy")
+
+	if filterBy == "" {
+		var err = db.Model(&shops).Select()
+		// fmt.Println(product.Brand.BrandName)
+		if err != nil {
+			fmt.Println("error while select shops")
+			fmt.Println(err)
+			db.Close()
+			return
+		}
+	} else if filterBy == "Banned" {
+		var err = db.Model(&shops).Where("status = ?", "Banned").Select()
+		// fmt.Println(product.Brand.BrandName)
+		if err != nil {
+			fmt.Println("error while select shops")
+			fmt.Println(err)
+			db.Close()
+			return
+		}
+	} else if filterBy == "Active" {
+		var err = db.Model(&shops).Where("status = ?", "Active").Select()
+		// fmt.Println(product.Brand.BrandName)
+		if err != nil {
+			fmt.Println("error while select shops")
+			fmt.Println(err)
+			db.Close()
+			return
+		}
+	}
+
+	json.NewEncoder(w).Encode(&shops)
+	db.Close()
+
+}
+
+func GetAllShopsPaginated(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers:", "Origin, Content-Type, X-Auth-Token, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+
+	var shops []model.Shop
+	db := databaseUtil.GetConnection()
+	filterBy := r.URL.Query().Get("filterBy")
+	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	offset := (page - 1) * limit
+
+	if err != nil {
+		fmt.Println("error while parsing")
+		fmt.Println(err)
+		json.NewEncoder(w).Encode("Error")
+		db.Close()
+		return
+	}
+
+	if filterBy == "" {
+		var err = db.Model(&shops).Limit(limit).Offset(offset).Select()
+		// fmt.Println(product.Brand.BrandName)
+		if err != nil {
+			fmt.Println("error while select shops")
+			fmt.Println(err)
+			db.Close()
+			return
+		}
+	} else if filterBy == "Banned" {
+		var err = db.Model(&shops).Where("status = ?", "Banned").Limit(limit).Offset(offset).Select()
+		// fmt.Println(product.Brand.BrandName)
+		if err != nil {
+			fmt.Println("error while select shops")
+			fmt.Println(err)
+			db.Close()
+			return
+		}
+	} else if filterBy == "Active" {
+		var err = db.Model(&shops).Where("status = ?", "Active").Limit(limit).Offset(offset).Select()
+		// fmt.Println(product.Brand.BrandName)
+		if err != nil {
+			fmt.Println("error while select shops")
+			fmt.Println(err)
+			db.Close()
+			return
+		}
+	}
+
+	json.NewEncoder(w).Encode(&shops)
+	db.Close()
+
+}
+
 func GetAShop(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -82,13 +183,18 @@ func AddShop(w http.ResponseWriter, r *http.Request) {
 
 	if error1 != nil {
 		fmt.Println(error1)
+		db.Close()
+		return
 	}
 
 	result, err := db.Model(shop).Returning("*").Insert()
 	if err != nil {
 		fmt.Println(err)
+		db.Close()
+		return
 	}
 	fmt.Println(result)
+	json.NewEncoder(w).Encode("Success")
 	db.Close()
 }
 

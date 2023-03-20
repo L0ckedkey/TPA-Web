@@ -102,7 +102,17 @@ function ShopReviewCard(props:any){
     const [question1, setQuestion1] = useState(-1)
     const [question2, setQuestion2] = useState(-1)
     const [question3, setQuestion3] = useState(-1)
+    const [userID, setUserID] = useState('')
 
+    useEffect(() => {
+
+        const getCurName = async () => {
+            var name = await getUserID()
+            setUserID(name)
+        }
+        
+        getCurName()      
+    }, [])
     const UpdateReview = () => {
         Axios.get(updateReviewLink, {
             params:{
@@ -111,7 +121,8 @@ function ShopReviewCard(props:any){
                 newQ2: question2,
                 newQ3: question3,
                 shopPoint: point,
-                review: review
+                review: review,
+                accountID: userID
             }
         }).then(function (response) {
         //    setProducts(response.data)
@@ -187,7 +198,8 @@ function ShopReviewCard(props:any){
     const deleteReview = () => {
         Axios.get(deleteReviewLink, {
             params:{
-                reviewID: props.ID
+                reviewID: props.ID,
+                accountID: userID
             }
         }).then(function (response) {
         //    setProducts(response.data)

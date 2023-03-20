@@ -34,6 +34,12 @@ func CreateSchema(db *pg.DB) error {
 		(*model.FollowedWishlist)(nil),
 		(*model.ReviewWishlist)(nil),
 		(*model.HelpfullReview)(nil),
+		(*model.Message)(nil),
+		(*model.SaveForLater)(nil),
+		(*model.ChatHeader)(nil),
+		(*model.ChatDetail)(nil),
+		(*model.CustomerServiceReview)(nil),
+		
 	}
 	fmt.Println("make schema")
 	for _, model := range models {

@@ -79,7 +79,7 @@ func GetAllProducts(w http.ResponseWriter, r *http.Request) {
 
 	var products []*model.Product
 
-	var err = db.Model(&products).Where("Shop.status = ?", "Active").Relation("Brand").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+	var err = db.Model(&products).Where("Shop.status = ?", "Active").Order("rating DESC").Relation("Brand").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
 	fmt.Println("products", products)
 	if err != nil {
 		fmt.Println(err)
@@ -91,6 +91,15 @@ func GetAllProducts(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func GetPopularBrand(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers:", "Origin, Content-Type, X-Auth-Token, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+
+}
+
 func GetAllProductsPrice(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -99,18 +108,86 @@ func GetAllProductsPrice(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var db = databaseUtil.GetConnection()
-	order := "product_price " + r.URL.Query().Get("order")
+	order := r.URL.Query().Get("order")
 	nameSearch := fmt.Sprintf("%%%s%%", strings.ToLower(r.URL.Query().Get("name")))
 	// search := r.URL.Query().Get("search")
 	var products []*model.Product
 
-	var err = db.Model(&products).Where("LOWER(product_name) LIKE ?", nameSearch).Relation("Brand").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Order(order).Select()
-	fmt.Println("products", products)
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		json.NewEncoder(w).Encode(&products)
+	if order == "price ASC" {
+		var err = db.Model(&products).Where("LOWER(product_name) LIKE ?", nameSearch).Order("product_price ASC").Relation("Brand").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		fmt.Println("products", products)
+		if err != nil {
+			fmt.Println("erorr while sort price ASC")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode(products)
+			return
+		}
+	} else if order == "price DESC" {
+		var err = db.Model(&products).Where("LOWER(product_name) LIKE ?", nameSearch).Order("product_price DESC").Relation("Brand").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		fmt.Println("products", products)
+		if err != nil {
+			fmt.Println("erorr while sort price DESC")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode(products)
+			return
+		}
+	} else if order == "rating ASC" {
+		var err = db.Model(&products).Where("LOWER(product_name) LIKE ?", nameSearch).Order("rating ASC").Relation("Brand").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		fmt.Println("products", products)
+		if err != nil {
+			fmt.Println("erorr while sort rating ASC")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode(products)
+			return
+		}
+	} else if order == "rating DESC" {
+		var err = db.Model(&products).Where("LOWER(product_name) LIKE ?", nameSearch).Order("rating DESC").Relation("Brand").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		fmt.Println("products", products)
+		if err != nil {
+			fmt.Println("erorr while sort rating DESC")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode(products)
+			return
+		}
+	} else if order == "reviews ASC" {
+		var err = db.Model(&products).Where("LOWER(product_name) LIKE ?", nameSearch).Order("reviewed ASC").Relation("Brand").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		fmt.Println("products", products)
+		if err != nil {
+			fmt.Println("erorr while sort rating ASC")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode(products)
+			return
+		}
+	} else if order == "reviews DESC" {
+		var err = db.Model(&products).Where("LOWER(product_name) LIKE ?", nameSearch).Order("reviewed DESC").Relation("Brand").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		fmt.Println("products", products)
+		if err != nil {
+			fmt.Println("erorr while sort rating DESC")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode(products)
+			return
+		}
+	} else if order == "sold ASC" {
+		var err = db.Model(&products).Where("LOWER(product_name) LIKE ?", nameSearch).Order("sold ASC").Relation("Brand").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		fmt.Println("products", products)
+		if err != nil {
+			fmt.Println("erorr while sort rating ASC")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode(products)
+			return
+		}
+	} else if order == "sold DESC" {
+		var err = db.Model(&products).Where("LOWER(product_name) LIKE ?", nameSearch).Order("sold DESC").Relation("Brand").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		fmt.Println("products", products)
+		if err != nil {
+			fmt.Println("erorr while sort rating DESC")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode(products)
+			return
+		}
 	}
+
+	json.NewEncoder(w).Encode(&products)
 
 	db.Close()
 
@@ -124,18 +201,86 @@ func GetAllProductsPriceBrand(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var db = databaseUtil.GetConnection()
-	order := "product_price " + r.URL.Query().Get("order")
+	order := r.URL.Query().Get("order")
 	nameSearch := fmt.Sprintf("%%%s%%", strings.ToLower(r.URL.Query().Get("name")))
 	// search := r.URL.Query().Get("search")
 	var products []*model.Product
 
-	var err = db.Model(&products).Where("LOWER(brand.name) LIKE ?", nameSearch).Relation("Brand").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Order(order).Select()
-	fmt.Println("products", products)
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		json.NewEncoder(w).Encode(&products)
+	if order == "price ASC" {
+		var err = db.Model(&products).Where("LOWER(brand.name) LIKE ?", nameSearch).Order("product_price ASC").Relation("Brand").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		fmt.Println("products", products)
+		if err != nil {
+			fmt.Println("erorr while sort price ASC")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode(products)
+			return
+		}
+	} else if order == "price DESC" {
+		var err = db.Model(&products).Where("LOWER(brand.name) LIKE ?", nameSearch).Order("product_price DESC").Relation("Brand").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		fmt.Println("products", products)
+		if err != nil {
+			fmt.Println("erorr while sort price DESC")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode(products)
+			return
+		}
+	} else if order == "rating ASC" {
+		var err = db.Model(&products).Where("LOWER(brand.name) LIKE ?", nameSearch).Order("rating ASC").Relation("Brand").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		fmt.Println("products", products)
+		if err != nil {
+			fmt.Println("erorr while sort rating ASC")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode(products)
+			return
+		}
+	} else if order == "rating DESC" {
+		var err = db.Model(&products).Where("LOWER(brand.name) LIKE ?", nameSearch).Order("rating DESC").Relation("Brand").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		fmt.Println("products", products)
+		if err != nil {
+			fmt.Println("erorr while sort rating DESC")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode(products)
+			return
+		}
+	} else if order == "reviews ASC" {
+		var err = db.Model(&products).Where("LOWER(brand.name) LIKE ?", nameSearch).Order("reviewed ASC").Relation("Brand").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		fmt.Println("products", products)
+		if err != nil {
+			fmt.Println("erorr while sort rating ASC")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode(products)
+			return
+		}
+	} else if order == "reviews DESC" {
+		var err = db.Model(&products).Where("LOWER(brand.name) LIKE ?", nameSearch).Order("reviewed DESC").Relation("Brand").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		fmt.Println("products", products)
+		if err != nil {
+			fmt.Println("erorr while sort rating DESC")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode(products)
+			return
+		}
+	} else if order == "sold ASC" {
+		var err = db.Model(&products).Where("LOWER(brand.name) LIKE ?", nameSearch).Order("sold ASC").Relation("Brand").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		fmt.Println("products", products)
+		if err != nil {
+			fmt.Println("erorr while sort rating ASC")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode(products)
+			return
+		}
+	} else if order == "sold DESC" {
+		var err = db.Model(&products).Where("LOWER(brand.name) LIKE ?", nameSearch).Order("sold DESC").Relation("Brand").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		fmt.Println("products", products)
+		if err != nil {
+			fmt.Println("erorr while sort rating DESC")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode(products)
+			return
+		}
 	}
+
+	json.NewEncoder(w).Encode(&products)
 
 	db.Close()
 
@@ -383,7 +528,7 @@ func GetAllProductsFromShop(w http.ResponseWriter, r *http.Request) {
 	var products []*model.Product
 
 	fmt.Println(id)
-	var err = db.Model(&products).Where("shop_id = ?", id).Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+	var err = db.Model(&products).Where("shop_id = ?", id).Order("rating DESC").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
 	// fmt.Println(product.Brand.BrandName)
 	if err != nil {
 		fmt.Println(err)
@@ -407,6 +552,7 @@ func GetAllProductsFromShopPaginated(w http.ResponseWriter, r *http.Request) {
 	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
 	page, err := strconv.Atoi(r.URL.Query().Get("page"))
 	shopID, err := strconv.Atoi(r.URL.Query().Get("shopID"))
+	sort := r.URL.Query().Get("sort")
 	offset := (page - 1) * limit
 
 	var products []*model.Product
@@ -418,13 +564,92 @@ func GetAllProductsFromShopPaginated(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = db.Model(&products).Where("shop_id = ?", shopID).Limit(limit).Offset(offset).Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
-	// fmt.Println(product.Brand.BrandName)
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		json.NewEncoder(w).Encode(&products)
+	fmt.Println(shopID)
+	fmt.Println(sort)
+	if sort == "" {
+		err := db.Model(&products).Where("product.shop_id = ?", shopID).Order("rating ASC").Limit(limit).Offset(offset).Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		if err != nil {
+			fmt.Println("Error in sort nil")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode(&products)
+			db.Close()
+			return
+		}
+	} else if sort == "Price ASC" {
+		err := db.Model(&products).Where("product.shop_id = ?", shopID).Limit(limit).Offset(offset).Order("product_price ASC").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		if err != nil {
+			fmt.Println("Error in sort price ASC")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode(&products)
+			db.Close()
+			return
+		}
+	} else if sort == "Price DESC" {
+		err := db.Model(&products).Where("product.shop_id = ?", shopID).Limit(limit).Offset(offset).Order("product_price DESC").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		if err != nil {
+			fmt.Println("Error in sort price DESC")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode(&products)
+			db.Close()
+			return
+		}
+	} else if sort == "Rating ASC" {
+		err := db.Model(&products).Where("product.shop_id = ?", shopID).Limit(limit).Offset(offset).Order("rating ASC").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		if err != nil {
+			fmt.Println("Error in sort rating ASC")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode(&products)
+			db.Close()
+			return
+		}
+	} else if sort == "Rating DESC" {
+		err := db.Model(&products).Where("product.shop_id = ?", shopID).Limit(limit).Offset(offset).Order("rating DESC").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		if err != nil {
+			fmt.Println("Error in sort rating DESC")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode(&products)
+			db.Close()
+			return
+		}
+	} else if sort == "Reviews ASC" {
+		err := db.Model(&products).Where("product.shop_id = ?", shopID).Limit(limit).Offset(offset).Order("reviewed ASC").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		if err != nil {
+			fmt.Println("Error in sort review ASC")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode(&products)
+			db.Close()
+			return
+		}
+	} else if sort == "Reviews DESC" {
+		err := db.Model(&products).Where("product.shop_id = ?", shopID).Limit(limit).Offset(offset).Order("reviewed DESC").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		if err != nil {
+			fmt.Println("Error in sort review DESC")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode(&products)
+			db.Close()
+			return
+		}
+	} else if sort == "Sold ASC" {
+		err := db.Model(&products).Where("product.shop_id = ?", shopID).Limit(limit).Offset(offset).Order("sold ASC").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		if err != nil {
+			fmt.Println("Error in sort sold ASC")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode(&products)
+			db.Close()
+			return
+		}
+	} else if sort == "Sold DESC" {
+		err := db.Model(&products).Where("product.shop_id = ?", shopID).Limit(limit).Offset(offset).Order("sold DESC").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		if err != nil {
+			fmt.Println("Error in sort sold DESC")
+			fmt.Println(err)
+			json.NewEncoder(w).Encode(&products)
+			db.Close()
+			return
+		}
 	}
+
+	json.NewEncoder(w).Encode(products)
 
 	db.Close()
 
@@ -487,6 +712,7 @@ func GetAllProductsFromCategoryPaginated(w http.ResponseWriter, r *http.Request)
 	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
 	page, err := strconv.Atoi(r.URL.Query().Get("page"))
 	sort := r.URL.Query().Get("sort")
+	shopID, err := strconv.Atoi(r.URL.Query().Get("shopID"))
 	offset := (page - 1) * limit
 
 	if err != nil {
@@ -499,7 +725,7 @@ func GetAllProductsFromCategoryPaginated(w http.ResponseWriter, r *http.Request)
 	var products []*model.Product
 
 	if sort == "" {
-		err := db.Model(&products).Where("product_category.category_name = ?", category).Limit(limit).Offset(offset).Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		err := db.Model(&products).Where("product.shop_id = ?", shopID).Where("product_category.category_name = ?", category).Limit(limit).Offset(offset).Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
 		if err != nil {
 			fmt.Println("Error in sort nil")
 			fmt.Println(err)
@@ -508,7 +734,7 @@ func GetAllProductsFromCategoryPaginated(w http.ResponseWriter, r *http.Request)
 			return
 		}
 	} else if sort == "Price ASC" {
-		err := db.Model(&products).Where("product_category.category_name = ?", category).Limit(limit).Offset(offset).Order("product_price ASC").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		err := db.Model(&products).Where("product.shop_id = ?", shopID).Where("product_category.category_name = ?", category).Limit(limit).Offset(offset).Order("product_price ASC").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
 		if err != nil {
 			fmt.Println("Error in sort price ASC")
 			fmt.Println(err)
@@ -517,7 +743,7 @@ func GetAllProductsFromCategoryPaginated(w http.ResponseWriter, r *http.Request)
 			return
 		}
 	} else if sort == "Price DESC" {
-		err := db.Model(&products).Where("product_category.category_name = ?", category).Limit(limit).Offset(offset).Order("product_price DESC").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		err := db.Model(&products).Where("product.shop_id = ?", shopID).Where("product_category.category_name = ?", category).Limit(limit).Offset(offset).Order("product_price DESC").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
 		if err != nil {
 			fmt.Println("Error in sort price DESC")
 			fmt.Println(err)
@@ -526,7 +752,7 @@ func GetAllProductsFromCategoryPaginated(w http.ResponseWriter, r *http.Request)
 			return
 		}
 	} else if sort == "Rating ASC" {
-		err := db.Model(&products).Where("product_category.category_name = ?", category).Limit(limit).Offset(offset).Order("rating ASC").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		err := db.Model(&products).Where("product.shop_id = ?", shopID).Where("product_category.category_name = ?", category).Limit(limit).Offset(offset).Order("rating ASC").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
 		if err != nil {
 			fmt.Println("Error in sort rating ASC")
 			fmt.Println(err)
@@ -535,7 +761,7 @@ func GetAllProductsFromCategoryPaginated(w http.ResponseWriter, r *http.Request)
 			return
 		}
 	} else if sort == "Rating DESC" {
-		err := db.Model(&products).Where("product_category.category_name = ?", category).Limit(limit).Offset(offset).Order("rating DESC").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		err := db.Model(&products).Where("product.shop_id = ?", shopID).Where("product_category.category_name = ?", category).Limit(limit).Offset(offset).Order("rating DESC").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
 		if err != nil {
 			fmt.Println("Error in sort rating DESC")
 			fmt.Println(err)
@@ -544,7 +770,7 @@ func GetAllProductsFromCategoryPaginated(w http.ResponseWriter, r *http.Request)
 			return
 		}
 	} else if sort == "Reviews ASC" {
-		err := db.Model(&products).Where("product_category.category_name = ?", category).Limit(limit).Offset(offset).Order("reviewed ASC").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		err := db.Model(&products).Where("product.shop_id = ?", shopID).Where("product_category.category_name = ?", category).Limit(limit).Offset(offset).Order("reviewed ASC").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
 		if err != nil {
 			fmt.Println("Error in sort review ASC")
 			fmt.Println(err)
@@ -553,7 +779,7 @@ func GetAllProductsFromCategoryPaginated(w http.ResponseWriter, r *http.Request)
 			return
 		}
 	} else if sort == "Reviews DESC" {
-		err := db.Model(&products).Where("product_category.category_name = ?", category).Limit(limit).Offset(offset).Order("reviewed DESC").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		err := db.Model(&products).Where("product.shop_id = ?", shopID).Where("product_category.category_name = ?", category).Limit(limit).Offset(offset).Order("reviewed DESC").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
 		if err != nil {
 			fmt.Println("Error in sort review DESC")
 			fmt.Println(err)
@@ -562,7 +788,7 @@ func GetAllProductsFromCategoryPaginated(w http.ResponseWriter, r *http.Request)
 			return
 		}
 	} else if sort == "Sold ASC" {
-		err := db.Model(&products).Where("product_category.category_name = ?", category).Limit(limit).Offset(offset).Order("sold ASC").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		err := db.Model(&products).Where("product.shop_id = ?", shopID).Where("product_category.category_name = ?", category).Limit(limit).Offset(offset).Order("sold ASC").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
 		if err != nil {
 			fmt.Println("Error in sort sold ASC")
 			fmt.Println(err)
@@ -571,7 +797,7 @@ func GetAllProductsFromCategoryPaginated(w http.ResponseWriter, r *http.Request)
 			return
 		}
 	} else if sort == "Sold DESC" {
-		err := db.Model(&products).Where("product_category.category_name = ?", category).Limit(limit).Offset(offset).Order("sold DESC").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
+		err := db.Model(&products).Where("product.shop_id = ?", shopID).Where("product_category.category_name = ?", category).Limit(limit).Offset(offset).Order("sold DESC").Relation("Brand").Relation("ProductCategory").Relation("Shop").Relation("ProductSubCategory").Relation("ProductSubCategoryDetail").Select()
 		if err != nil {
 			fmt.Println("Error in sort sold DESC")
 			fmt.Println(err)
@@ -879,6 +1105,54 @@ func UpdateProduct(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode("Success")
 
+	db.Close()
+
+}
+
+func GetBestBrand(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers:", "Origin, Content-Type, X-Auth-Token, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+
+	var brand []model.Brand
+	db := databaseUtil.GetConnection()
+
+	err := db.Model(&brand).Order("sold DESC").Limit(10).Select()
+
+	if err != nil {
+		fmt.Println(err)
+		json.NewEncoder(w).Encode("Error")
+		db.Close()
+		return
+	}
+
+	json.NewEncoder(w).Encode(brand)
+	db.Close()
+
+}
+
+func GetBestProductCategory(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers:", "Origin, Content-Type, X-Auth-Token, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+
+	var brand []model.ProductCategory
+	db := databaseUtil.GetConnection()
+
+	err := db.Model(&brand).Order("sold DESC").Limit(3).Select()
+
+	if err != nil {
+		fmt.Println(err)
+		json.NewEncoder(w).Encode("Error")
+		db.Close()
+		return
+	}
+
+	json.NewEncoder(w).Encode(brand)
 	db.Close()
 
 }
