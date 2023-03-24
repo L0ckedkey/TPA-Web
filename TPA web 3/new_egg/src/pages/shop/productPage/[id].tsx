@@ -3,7 +3,7 @@ import { useRouter } from "next/router"
 import axios from "axios"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
-import style from '../../styles/shops.module.css'
+import style from '../../../styles/shops.module.css'
 import Axios from 'axios'
 import { Card, Cards } from "@/components/card"
 import middleware from "@/utiil/token"
@@ -255,10 +255,6 @@ export default function ShopDetail(){
         router.push("/shop/viewReview/" + id)
     }
 
-    const goToProductPage = () => {
-        router.push("/shop/productPage/" + id)
-    }
-
     return(
         <div>
             <Navbar/>
@@ -289,23 +285,7 @@ export default function ShopDetail(){
                         <label className={style["shop-statistic-detail"]}>{totalProduct}</label>
                     </div>
                 </div>
-                    {
-                        links ? 
-                        <div className={style["carousel"]}>
-                            <div className={style["carousel-prev"]} onClick={() => handlePrevClick()}>
-                                &#10094;
-                            </div>
-                        
-                            {
-                                links[currentImageIndex] ?
-                                <img src={links[currentImageIndex].Url} alt="slide" /> :
-                                <img alt="no photo" />
-                            }
-                            <div className={style["carousel-next"]} onClick={() => handleNextClick()}>
-                                &#10095;
-                            </div>
-                        </div>: null
-                    }
+                  
                 <select value={filterBy} onChange={(event) => setFilterBy(event.target.value)} className={style["dropdown"]} >
                     <option value={""}></option>
                    {
@@ -327,8 +307,6 @@ export default function ShopDetail(){
                     <option value={"Sold DESC"}>Sort Sold High to Low</option>
                 </select>
                 <button onClick={() => goToReview()}>View Review</button>
-                <button onClick={() => goToProductPage()}>View Product</button>
-                
                 <Cards>
                 { products ? 
                     products.map((product:any) => {

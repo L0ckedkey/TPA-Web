@@ -265,7 +265,9 @@ export default function ChatList(){
           {
             messageHeaders ? messageHeaders.map((messageHeader:any) => {
               return(
-                <h1 onClick={() => setRecepient(messageHeader.AccountID)} key={messageHeader.ID}>{messageHeader.Account.FirstName + " " + messageHeader.Account.LastName}</h1>
+                <div>
+                  <h1 onClick={() => setRecepient(messageHeader.AccountID)} key={messageHeader.ID}>{messageHeader.Account.FirstName + " " + messageHeader.Account.LastName}</h1>
+                </div>
               )
             }):null
           }
